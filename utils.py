@@ -1,4 +1,12 @@
 import autograd.numpy as np
+from autograd import grad
+
+
+def grad_logp(dlogp, x):
+    """ dlogp should be a list of gradient logps, respective to each
+        paramter in x
+    """
+    return np.array([each(*x) for each in dlogp])
 
 
 def default_start(start, logp):
