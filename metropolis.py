@@ -1,5 +1,5 @@
-import numpy as np
-from .utils import default_start
+import autograd.numpy as np
+from utils import default_start
 
 class Metropolis(object):
     # TODO: Documentation
@@ -22,8 +22,9 @@ class Metropolis(object):
             batches + [num % self.tune_interval]
 
         for each in batches:
-            sample_batch = np.vstack([next(self.sampler) for _ in range(each)])
-            samples = np.vstack([samples, sample_batch])
+            sample_batch = np.vstack(np.array([next(self.sampler)
+                                               for _ in range(each)]))
+            samples = np.vstack(np.array([samples, sample_batch]))
             self._n_samples += each
             self._unique_samples += len(np.unique(sample_batch))
             self.scale = tune(self.scale, self.acceptance)
