@@ -1,9 +1,9 @@
-import numpy as np
+import autograd.numpy as np
 from utils import default_start
 
 
 class Hamiltonian(object):
-    def __init__(self, logp, dlogp, start=None, eta=0.1, L=100):
+    def __init__(self, logp, dlogp, start=None, eta=0.1, L=20):
         self.logp = logp
         self.dlogp = dlogp
         self.start = default_start(start, logp)
@@ -15,16 +15,15 @@ class Hamiltonian(object):
                                         L=L)
 
     def sample(self, num, burn=0, thin=1):
-        samples = np.zeros((num, self.start.size))
-        for i in range(num):
-            samples[i, :] = next(self.sampler)
+        samples = np.vstack(np.array([next(self.sampler)
+                                      for _ in range(num)]))
         return samples[burn+1::thin]
 
 
 def leapfrog(x, r, eta, dlogp):
-    r_new = r + eta/2*dlogp(*x)
+    r_new = r + eta/2*dlogp(*x.tolist())
     x_new = x + eta*r_new
-    r_new = r_new + (eta/2)*dlogp(*x)
+    r_new = r_new + (eta/2)*dlogp(*x.tolist())
     return x_new, r_new
 
 
