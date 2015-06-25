@@ -1,12 +1,12 @@
 import numpy as np
-
+from .utils import default_start
 
 class Metropolis(object):
     # TODO: Documentation
     # TODO: Allow for sticking in different proposal distributions.
     def __init__(self, logp, start=None, scale=1., tune_interval=100):
         self.logp = logp
-        self.start = _default_start(start, logp)
+        self.start = default_start(start, logp)
         self.scale = scale
         self.sampler = generate_samples(logp, start=self.start, scale=scale)
         self._n_samples = 0
@@ -70,20 +70,9 @@ def accept(x, y, logp):
         return False
 
 
-def _default_start(start, logp):
-    """ If start is None, return a zeros array with lengthequal to the number
-        of arguments in logp
-    """
-    if start is None:
-        default = np.ones(logp.__code__.co_argcount)
-        return default
-    else:
-        return np.hstack(start)
-
-
 def generate_samples(logp, start=None, scale=1):
     """ Returns a generator the yields the next sample. """
-    x = _default_start(start, logp)
+    x = default_start(start, logp)
     while True:
         y = proposal(x, scale=scale)
         if accept(x, y, logp):
