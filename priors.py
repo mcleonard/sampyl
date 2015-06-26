@@ -3,7 +3,7 @@
     distributions to build logps with.
 """
 
-import numpy as np
+import autograd.numpy as np
 
 
 def uniform(x, lower=0., upper=1.):
