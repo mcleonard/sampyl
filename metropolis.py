@@ -1,60 +1,50 @@
 import autograd.numpy as np
-from utils import default_start
+from core import Sampler
 
-class Metropolis(object):
+
+class Metropolis(Sampler):
     # TODO: Documentation
     # TODO: Allow for sticking in different proposal distributions.
     def __init__(self, logp, start=None, scale=1., tune_interval=100):
-        self.logp = logp
-        self.start = default_start(start, logp)
-        self.scale = scale
-        self.sampler = generate_samples(logp, start=self.start, scale=scale)
-        self._n_samples = 0
-        self._unique_samples = 0
+        super().__init__(logp, start=start, scale=scale)
         self.tune_interval = tune_interval
+        self._steps_until_tune = tune_interval
 
-    def sample(self, num, burn=0, thin=1):
-        # TODO: Check if I should allocate the samples array first, then fill
-        #       it while sampling. It will likely be faster.
-        samples = np.zeros(self.start.size)
-        batches = [self.tune_interval]*(num//self.tune_interval)
-        if num % self.tune_interval != 0:
-            batches + [num % self.tune_interval]
+    def step(self):
+        # Perform a Metropolis-Hastings step
+        x = self.state
+        y = proposal(x, scale=self.scale)
+        if accept(x, y, self.logp):
+            self.state = y
+            self._accepted += 1
 
-        for each in batches:
-            sample_batch = np.vstack(np.array([next(self.sampler)
-                                               for _ in range(each)]))
-            samples = np.vstack(np.array([samples, sample_batch]))
-            self._n_samples += each
-            self._unique_samples += len(np.unique(sample_batch))
+        self._sampled += 1
+
+        self._steps_until_tune -= 1
+        if self._steps_until_tune == 0:
             self.scale = tune(self.scale, self.acceptance)
-
-        return samples[burn+1::thin]
-
-    def reset(self):
-        self.sampler = generate_samples(self.logp,
-                                        start=self.start,
-                                        scale=self.scale)
-        self._n_samples = 0
-        self._unique_samples = 0
-        return self
+            self._steps_until_tune = self.tune_interval
+        
+        return self.state
 
     @property
     def acceptance(self):
-        return self._unique_samples/self._n_samples
+        return self._accepted/self._sampled
 
     def __repr__(self):
         return 'Metropolis-Hastings sampler'
 
 
-def proposal(x, scale=1):
+def proposal(x, scale=None):
     """ Sample a proposal x from a multivariate normal distribution. """
-    try:
-        dim = x.size
-    except AttributeError:
-        x = np.hstack([x])
-        dim = x.size
-    cov = np.diagflat(np.ones(dim))*scale
+    if scale is None:
+        try:
+            scale = x.shape
+        except AttributeError:
+            scale = np.hstack([x])
+    elif len(scale) != len(x):
+        raise ValueError("x and scale must have same length")
+    cov = np.diagflat(scale)
     y = np.random.multivariate_normal(x, cov)
     return y
 
@@ -69,16 +59,6 @@ def accept(x, y, logp):
         return True
     else:
         return False
-
-
-def generate_samples(logp, start=None, scale=1):
-    """ Returns a generator the yields the next sample. """
-    x = default_start(start, logp)
-    while True:
-        y = proposal(x, scale=scale)
-        if accept(x, y, logp):
-            x = y
-        yield x
 
 
 def tune(scale, acceptance):
