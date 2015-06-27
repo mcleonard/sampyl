@@ -1,7 +1,7 @@
 """ Subclassing numpy.ndarray to add some utility things to the sample arrays.
 """
 
-import autograd.numpy as np
+from core import np
 
 
 class Trace(np.ndarray):

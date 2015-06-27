@@ -1,5 +1,10 @@
-import autograd.numpy as np
-from autograd import grad
+
+try:
+    import autograd.numpy as np
+    from autograd import grad
+except ImportError:
+    import numpy as np
+
 from utils import logp_var_names, default_start, count
 from trace import Trace
 

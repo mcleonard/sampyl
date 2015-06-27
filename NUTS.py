@@ -1,5 +1,4 @@
-import autograd.numpy as np
-
+from core import np
 from core import Sampler
 from hamiltonian import leapfrog, energy, initial_momentum
 

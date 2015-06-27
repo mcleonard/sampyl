@@ -1,4 +1,4 @@
-import autograd.numpy as np
+from core import np
 from core import Sampler
 
 

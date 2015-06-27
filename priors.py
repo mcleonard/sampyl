@@ -2,8 +2,7 @@
     Will make this more formal later. The plan is to offer a lot of prior
     distributions to build logps with.
 """
-
-import autograd.numpy as np
+from core import np
 
 
 def uniform(x, lower=0., upper=1.):
