@@ -39,10 +39,10 @@ def leapfrog(x, r, step_size, dlogp):
 
 
 def accept(x, y, r_0, r, logp):
-    E_new = np.exp(energy(logp, y, r))
-    E = np.exp(energy(logp, x, r_0))
-    A = np.min(np.array([1, E_new/E]))
-    return np.random.rand() < A
+    E_new = energy(logp, y, r)
+    E = energy(logp, x, r_0)
+    A = np.min(np.array([0, E_new - E]))
+    return np.log(np.random.rand()) < A
 
 
 def energy(logp, x, r):
