@@ -7,7 +7,7 @@ class Sampler(object):
     # When subclassing, set this to False if grad logp functions aren't needed
     _grad_logp_flag = True
 
-    def __init__(self, logp, dlogp=None, start=None, scale=1.):
+    def __init__(self, logp, grad_logp=None, start=None, scale=1.):
         self.logp = logp
         self.var_names = logp_var_names(logp)
         self.start = default_start(start, logp)
@@ -16,10 +16,14 @@ class Sampler(object):
         self.sampler = None
         self._sampled = 0
         self._accepted = 0
-        if self._grad_logp_flag and dlogp is None:
-            self.dlogp = auto_grad_logp(logp)
+        if self._grad_logp_flag and grad_logp is None:
+            self.grad_logp = auto_grad_logp(logp)
         else:
-            self.dlogp = dlogp
+            if len(self.var_names) > 1 and len(grad_logp) != len(var_names):
+                raise TypeError("grad_logp must be iterable with length equal to"
+                                " the number of parameters in logp.")
+            else:
+                self.grad_logp = grad_logp
 
     def step(self):
         pass

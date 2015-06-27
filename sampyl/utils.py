@@ -2,15 +2,15 @@ from .core import np
 from itertools import count
 
 
-def grad_logp(dlogp, x):
-    """ dlogp should be a list of gradient logps, respective to each
+def grad_vec(grad_logp, x):
+    """ grad_logp should be a list of gradient logps, respective to each
         paramter in x
     """
     try:
-        return np.array([each(*x) for each in dlogp])
-    except TypeError:  # Happens when dlogp isn't iterable
-        dlogp = [dlogp]
-        return grad_logp(dlogp, x)
+        return np.array([each(*x) for each in grad_logp])
+    except TypeError:  # Happens when grad_logp isn't iterable
+        grad_logp = [grad_logp]
+        return grad_logp(grad_logp, x)
 
 
 def default_start(start, logp):

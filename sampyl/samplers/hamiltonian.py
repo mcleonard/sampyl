@@ -1,11 +1,13 @@
 from ..core import np
-from ..utils import grad_logp
+from ..utils import grad_vec
 from .base import Sampler
 
 
 class Hamiltonian(Sampler):
-    def __init__(self, logp, dlogp=None, start=None, scale=1., step_size=1, n_steps=5):
-        super().__init__(logp, dlogp, start=start, scale=scale)
+    def __init__(self, logp, grad_logp=None, start=None, scale=1.,
+                 step_size=1, n_steps=5):
+
+        super().__init__(logp, grad_logp, start=start, scale=scale)
         self.step_size = step_size / len(self.state)**(1/4)
         self.n_steps = n_steps
 
@@ -16,7 +18,7 @@ class Hamiltonian(Sampler):
         y, r = x, r0
 
         for i in range(self.n_steps):
-            y, r = leapfrog(y, r, self.step_size, self.dlogp)
+            y, r = leapfrog(y, r, self.step_size, self.grad_logp)
 
         if accept(x, y, r0, r, self.logp):
             x = y
@@ -31,10 +33,10 @@ class Hamiltonian(Sampler):
         return self._accepted/self._sampled
 
 
-def leapfrog(x, r, step_size, dlogp):
-    r_new = r + step_size/2*grad_logp(dlogp, x)
+def leapfrog(x, r, step_size, grad_logp):
+    r_new = r + step_size/2*grad_vec(grad_logp, x)
     x_new = x + step_size*r_new
-    r_new = r_new + (step_size/2)*grad_logp(dlogp, x_new)
+    r_new = r_new + (step_size/2)*grad_vec(grad_logp, x_new)
     return x_new, r_new
 
 

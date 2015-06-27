@@ -4,10 +4,11 @@ from .hamiltonian import leapfrog, energy, initial_momentum
 
 
 class NUTS(Sampler):
-    def __init__(self, logp, dlogp=None, start=None, scale=1., step_size=0.25,
+    def __init__(self, logp, grad_logp=None,
+                 start=None, scale=1., step_size=0.25,
                  Emax=1000., target_accept=0.65, gamma=0.05,
                  k=0.75, t0=10.):
-        super().__init__(logp, dlogp, start, scale)
+        super().__init__(logp, grad_logp, start, scale)
         self.step_size = step_size / len(self.state)**(1/4.)
         self.Emax = Emax
         self.target_accept = target_accept
@@ -21,7 +22,7 @@ class NUTS(Sampler):
     def step(self):
 
         H = self.logp
-        dH = self.dlogp
+        dH = self.grad_logp
         x = self.state
         r0 = initial_momentum(x, self.scale)
         #u = np.random.uniform(0., np.exp(energy(H, x, r0)))
