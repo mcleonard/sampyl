@@ -62,6 +62,8 @@ def accept(x, y, logp):
 
 
 def tune(scale, acceptance):
+    """ Borrowed from PyMC3 """
+
     # Switch statement
     if acceptance < 0.001:
         # reduce by 90 percent

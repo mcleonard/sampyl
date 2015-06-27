@@ -6,7 +6,7 @@ from core import Sampler
 class Hamiltonian(Sampler):
     def __init__(self, logp, start=None, scale=1., step_size=1, n_steps=5):
         super().__init__(logp, start=start, scale=scale)
-        self.step_size = step_size
+        self.step_size = step_size / len(self.state)**(1/4)
         self.n_steps = n_steps
 
     def step(self):
@@ -42,7 +42,7 @@ def accept(x, y, r_0, r, logp):
     E_new = energy(logp, y, r)
     E = energy(logp, x, r_0)
     A = np.min(np.array([0, E_new - E]))
-    return np.log(np.random.rand()) < A
+    return (np.log(np.random.rand()) < A)
 
 
 def energy(logp, x, r):

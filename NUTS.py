@@ -9,7 +9,7 @@ class NUTS(Sampler):
                  Emax=1000., target_accept=0.65, gamma=0.05,
                  k=0.75, t0=10.):
         super().__init__(logp, start, scale)
-        self.step_size = step_size
+        self.step_size = step_size / len(self.state)**(1/4.)
         self.Emax = Emax
         self.target_accept = target_accept
         self.gamma = gamma
@@ -25,7 +25,8 @@ class NUTS(Sampler):
         dH = self.dlogp
         x = self.state
         r0 = initial_momentum(x, self.scale)
-        u = np.random.uniform(0., np.exp(energy(H, x, r0)))
+        #u = np.random.uniform(0., np.exp(energy(H, x, r0)))
+        u = np.random.uniform()
         e = self.step_size
 
         xn, xp, rn, rp, y = x, x, r0, r0, x
@@ -45,7 +46,7 @@ class NUTS(Sampler):
 
             dx = xp - xn
             n = n + n1
-            s = s1 * (np.dot(dx, rn) >= 0)* (np.dot(dx, rp) >= 0)
+            s = s1 * (np.dot(dx, rn) >= 0) * (np.dot(dx, rp) >= 0)
             j = j + 1
 
         m = self._sampled
@@ -72,8 +73,8 @@ def buildtree(x, r, u, v, j, e, x0, r0, H, dH, Emax):
         E0 = energy(H, x0, r0)
         dE = E - E0
 
-        n1 = int(np.log(u) <= E)
-        s1 = int(np.log(u) < Emax + E)
+        n1 = int(np.log(u) - dE <= 0)
+        s1 = int(np.log(u) - dE < Emax)
 
         return x1, r1, x1, r1, x1, n1, s1, np.min(np.array([1, np.exp(dE)])), 1.
     else:
