@@ -1,5 +1,4 @@
 from core import np
-from autograd import grad
 from itertools import count
 
 

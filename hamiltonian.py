@@ -4,8 +4,8 @@ from core import Sampler
 
 
 class Hamiltonian(Sampler):
-    def __init__(self, logp, start=None, scale=1., step_size=1, n_steps=5):
-        super().__init__(logp, start=start, scale=scale)
+    def __init__(self, logp, dlogp=None, start=None, scale=1., step_size=1, n_steps=5):
+        super().__init__(logp, dlogp, start=start, scale=scale)
         self.step_size = step_size / len(self.state)**(1/4)
         self.n_steps = n_steps
 

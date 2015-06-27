@@ -5,8 +5,10 @@ from core import Sampler
 class Metropolis(Sampler):
     # TODO: Documentation
     # TODO: Allow for sticking in different proposal distributions.
+    _grad_logp_flag = False
+
     def __init__(self, logp, start=None, scale=1., tune_interval=100):
-        super().__init__(logp, start=start, scale=scale)
+        super().__init__(logp, None, start=start, scale=scale)
         self.tune_interval = tune_interval
         self._steps_until_tune = tune_interval
 
