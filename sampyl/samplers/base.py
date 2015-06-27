@@ -28,7 +28,7 @@ class Sampler(object):
     def step(self):
         pass
 
-    def sample(self, num, burn=0, thin=1):
+    def sample(self, num, burn=-1, thin=1):
         if self.sampler is None:
             self.sampler = (self.step() for _ in count(start=0, step=1))
         samples = np.array([next(self.sampler) for _ in range(num)])

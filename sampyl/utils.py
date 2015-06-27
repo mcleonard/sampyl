@@ -10,7 +10,7 @@ def grad_vec(grad_logp, x):
         return np.array([each(*x) for each in grad_logp])
     except TypeError:  # Happens when grad_logp isn't iterable
         grad_logp = [grad_logp]
-        return grad_logp(grad_logp, x)
+        return grad_vec(grad_logp, x)
 
 
 def default_start(start, logp):
