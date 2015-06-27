@@ -10,13 +10,8 @@ Sampyl includes three samplers currently:
 * Hamiltonian
 * NUTS
 
-The first two seem to be working fine. However, NUTS sometimes works, mostly doesn't. Still working on it.
 
-Cheers,
-
-Mat Leonard
-
-Dependences
+Dependencies
 -----------
 
 Currently, numpy and autograd are the only dependencies.
