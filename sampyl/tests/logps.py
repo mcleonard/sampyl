@@ -1,4 +1,5 @@
 from ..core import np
+import sampyl as smp
 
 
 def normal_1D():
@@ -22,4 +23,8 @@ def normal_posterior():
         mu_prior = smp.priors.uniform(mu, 5, 15)
         sig_prior = -np.log(np.abs(sig))
         return likelihood + mu_prior + sig_prior
-    return logp
+
+    def grad_logp(mu, sig):
+        pass
+
+    return logp, grad_logp
