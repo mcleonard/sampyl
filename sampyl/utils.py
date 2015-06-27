@@ -1,4 +1,4 @@
-from core import np
+from .core import np
 from itertools import count
 
 

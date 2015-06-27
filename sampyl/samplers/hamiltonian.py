@@ -1,6 +1,6 @@
-from core import np
-from utils import grad_logp
-from core import Sampler
+from ..core import np
+from ..utils import grad_logp
+from .base import Sampler
 
 
 class Hamiltonian(Sampler):

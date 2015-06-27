@@ -1,5 +1,5 @@
-from core import np
-from core import Sampler
+from ..core import np
+from .base import Sampler
 
 
 class Metropolis(Sampler):

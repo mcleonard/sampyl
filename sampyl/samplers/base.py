@@ -1,12 +1,6 @@
-
-try:
-    import autograd.numpy as np
-    from autograd import grad
-except ImportError:
-    import numpy as np
-
-from utils import logp_var_names, default_start, count
-from trace import Trace
+from ..core import np, auto_grad_logp
+from ..utils import logp_var_names, default_start, count
+from ..trace import Trace
 
 
 class Sampler(object):
@@ -48,11 +42,3 @@ class Sampler(object):
     @property
     def acceptance_rate(self):
         return self._accepted/self._sampled
-
-
-def auto_grad_logp(logp):
-    """ Automatically builds gradient logps using autograd. Returns as list
-        containing one grad logp with respect to each variable in logp.
-    """
-    n = logp.__code__.co_argcount
-    return [grad(logp, i) for i in range(n)]

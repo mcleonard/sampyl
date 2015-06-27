@@ -1,6 +1,6 @@
-from core import np
-from core import Sampler
-from hamiltonian import leapfrog, energy, initial_momentum
+from ..core import np
+from .base import Sampler
+from .hamiltonian import leapfrog, energy, initial_momentum
 
 
 class NUTS(Sampler):
