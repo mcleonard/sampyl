@@ -22,11 +22,3 @@ def default_start(start, logp):
         return default
     else:
         return np.hstack([start])
-
-
-def logp_var_names(logp):
-    # Putting underscores after the names so that variables names don't
-    # conflict with built in attributes
-    names = logp.__code__.co_varnames[:logp.__code__.co_argcount]
-    names = [each + "_" for each in names]
-    return names
