@@ -3,17 +3,35 @@ from .base import Sampler
 
 
 class Metropolis(Sampler):
-    # TODO: Documentation
     # TODO: Allow for sticking in different proposal distributions.
     _grad_logp_flag = False
 
     def __init__(self, logp, start=None, scale=1., tune_interval=100):
+        """ Metropolis-Hastings sampler for drawing from a distribution 
+            defined by a logp function.
+
+            Has automatic scaling such that acceptance rate stays around 50%
+
+            Parameters
+            ----------
+
+            logp: function
+                log P(X) function for sampling distribution
+            start: scalar or 1D array-like
+                starting state for sampler
+            scale: scalar or 1D array-like
+                initial scaling factor for proposal distribution
+            tune_interval: int 
+                number of samples between tunings of scale factor
+
+        """
         super().__init__(logp, None, start=start, scale=scale)
         self.tune_interval = tune_interval
         self._steps_until_tune = tune_interval
+        self._accepted = 0
 
     def step(self):
-        # Perform a Metropolis-Hastings step
+        """ Perform a Metropolis-Hastings step. """
         x = self.state
         y = proposal(x, scale=self.scale)
         if accept(x, y, self.logp):
@@ -26,7 +44,7 @@ class Metropolis(Sampler):
         if self._steps_until_tune == 0:
             self.scale = tune(self.scale, self.acceptance)
             self._steps_until_tune = self.tune_interval
-        
+
         return self.state
 
     @property
