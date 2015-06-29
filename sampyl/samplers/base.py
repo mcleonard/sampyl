@@ -1,6 +1,5 @@
 from ..core import np, auto_grad_logp
 from ..utils import count
-from ..trace import Trace
 
 
 class Sampler(object):
