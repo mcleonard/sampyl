@@ -1,5 +1,5 @@
 from ..core import np, auto_grad_logp
-from ..utils import default_start, count
+from ..utils import count
 from ..trace import Trace
 
 
@@ -8,17 +8,18 @@ class Sampler(object):
     _grad_logp_flag = True
 
     def __init__(self, logp, grad_logp=None, start=None, scale=1.):
-        self.logp = logp
+        self.logp = check_logp(logp)
         self.var_names = logp_var_names(logp)
-        self.start = default_start(start, logp)
-        self.state = self.start
+        self.var_sizes = logp.__annotations__
+        self.state = default_start(start, logp)
         self.scale = scale*np.ones(len(self.var_names))
         self.sampler = None
         self._sampled = 0
+        self._accepted = 0
 
         if self._grad_logp_flag and grad_logp is None:
             self.grad_logp = auto_grad_logp(logp)
-        else:
+        elif self._grad_logp_flag:
             if len(self.var_names) > 1 and len(grad_logp) != len(var_names):
                 raise TypeError("grad_logp must be iterable with length equal"
                                 " to the number of parameters in logp.")
@@ -43,10 +44,46 @@ class Sampler(object):
         """
         if self.sampler is None:
             self.sampler = (self.step() for _ in count(start=0, step=1))
-        samples = np.array([next(self.sampler) for _ in range(num)])
-        trace = samples[burn+1::thin].view(Trace)
-        trace.var_names = self.var_names
-        return trace
+
+        dtypes = [(field, 'f8', self.var_sizes[field]) for field in self.var_names]
+        samples = np.zeros(num, dtype=dtypes).view(np.recarray)
+        for i in range(num):
+            samples[i] = np.hstack(next(self.sampler))
+
+        return samples[burn+1::thin]
+
+
+def check_logp(logp):
+    if not hasattr(logp, '__call__'):
+        raise TypeError("logp must be a function")
+    elif logp.__code__.co_argcount == 0:
+        raise ValueError("logp must have arguments")
+    else:
+        return logp
+
+
+
+def default_start(start, logp):
+    """ If start is None, return a zeros array with length equal to the number
+        of arguments in logp
+    """
+    var_sizes = logp.__annotations__
+    var_names = logp.__code__.co_varnames[:logp.__code__.co_argcount]
+    for each in var_names:
+        if each not in var_sizes:
+            var_sizes.update({each: 1})
+
+    if start is None:
+        start = [np.ones(var_sizes[each]) for each in var_names]
+        return np.array(start)
+    else:
+        # Check that start has the correct sizes
+        for i, var in enumerate(start):
+            var_size = var_sizes[var_names[i]]
+            if var_size > 1 and len(var) != var_size:
+                raise ValueError("start must match sizes defined in logp")
+        else:
+            return np.array(start)
 
 
 def logp_var_names(logp):
@@ -54,5 +91,4 @@ def logp_var_names(logp):
     # Putting underscores after the names so that variables names don't
     # conflict with built in attributes
     names = logp.__code__.co_varnames[:logp.__code__.co_argcount]
-    names = [each + "_" for each in names]
     return names

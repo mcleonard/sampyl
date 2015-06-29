@@ -8,7 +8,7 @@ class Hamiltonian(Sampler):
                  step_size=1, n_steps=5):
 
         super().__init__(logp, grad_logp, start=start, scale=scale)
-        self.step_size = step_size / len(self.state)**(1/4)
+        self.step_size = step_size / sum(self.var_sizes.values())**(1/4)
         self.n_steps = n_steps
 
     def step(self):
@@ -48,10 +48,13 @@ def accept(x, y, r_0, r, logp):
 
 
 def energy(logp, x, r):
-    return logp(*x) - 0.5*np.dot(r, r)
+    # Need to stack r into a 1D vector before taking inner product
+    r1 = np.hstack(r)
+    return logp(*x) - 0.5*np.dot(r1, r1)
 
 
 def initial_momentum(state, scale):
-    cov = np.diagflat(scale*np.ones(len(state)))
-    r = np.random.multivariate_normal(np.zeros(state.shape), cov)
-    return r
+    r = []
+    for i, var in enumerate(state):
+        r.append(np.random.normal(np.zeros(var.shape), scale[i]))
+    return np.array(r)

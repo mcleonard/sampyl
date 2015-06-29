@@ -25,7 +25,6 @@ class NUTS(Sampler):
         dH = self.grad_logp
         x = self.state
         r0 = initial_momentum(x, self.scale)
-        #u = np.random.uniform(0., np.exp(energy(H, x, r0)))
         u = np.random.uniform()
         e = self.step_size
 
@@ -44,9 +43,10 @@ class NUTS(Sampler):
             if s1 == 1 and bern(np.min(np.array([1, n1/n]))):
                 y = x1
 
-            dx = xp - xn
+            dx = np.hstack(xp - xn)
             n = n + n1
-            s = s1 * (np.dot(dx, rn) >= 0) * (np.dot(dx, rp) >= 0)
+            s = s1 * (np.dot(dx, np.hstack(rn)) >= 0) * \
+                     (np.dot(dx, np.hstack(rp)) >= 0)
             j = j + 1
 
         m = self._sampled
@@ -54,9 +54,8 @@ class NUTS(Sampler):
         self.Hbar = (1 - w)*self.Hbar + w*(self.target_accept - a*1./na)
         self.step_size = np.exp(self.mu - (m**.5/self.gamma)*self.Hbar)
 
-        if (y != self.state).any():
-            self.state = y
-            self._accepted += 1
+        self.state = y
+        self._accepted += 1
         self._sampled += 1
 
         return y
@@ -93,8 +92,12 @@ def buildtree(x, r, u, v, j, e, x0, r0, H, dH, Emax):
             a1 = a1 + a2
             na1 = na1 + na2
 
-            dx = xp - xn
-            s1 = s2 * (np.dot(dx, rn) >= 0) * (np.dot(dx, rp) >= 0)
+            # Taking the inner product requires a 1D vector, xp, xn, rn, rp
+            # have shapes (len(var1), len(var2), ..., len(var_n)), so need to
+            # hstack these things.
+            dx = np.hstack(xp - xn)
+            s1 = s2 * (np.dot(dx, np.hstack(rn)) >= 0) * \
+                      (np.dot(dx, np.hstack(rp)) >= 0)
             n1 = n1 + n2
         return xn, rn, xp, rp, x1, n1, s1, a1, na1
         

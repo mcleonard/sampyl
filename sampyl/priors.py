@@ -3,21 +3,31 @@
     distributions to build logps with.
 """
 from .core import np
+from functools import partial
 
 OUTOFBOUNDS = -np.inf
 
 
-def uniform(x, lower=0., upper=1.):
-    if x < lower:
-        return OUTOFBOUNDS
-    elif x > upper:
-        return OUTOFBOUNDS
+def bound(f, *conditions):
+    for each in conditions:
+        if each:
+            return OUTOFBOUNDS
     else:
-        return -np.log(upper-lower)
+        return f
+
+
+def prior_map(func, arr, **kwargs):
+    f = partial(func, **kwargs)
+    return np.apply_along_axis(f, axis=1, arr=arr[:, None])
+
+
+def uniform(x, lower=0., upper=1.):
+    logp = lambda lower, upper: -np.log(upper-lower)
+    out = bound(logp(lower, upper), x < lower, x > upper)
+    return out
 
 
 def poisson(events, lam):
-    if lam <= 0:
-        return OUTOFBOUNDS
-    else:
-        return np.sum(events*np.log(lam)) - events.size*lam
+    logp = lambda events, lam: np.sum(events*np.log(lam)) - events.size*lam
+    out = bound(logp(events, lam), lam <= 0)
+    return out

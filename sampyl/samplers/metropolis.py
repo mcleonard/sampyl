@@ -55,18 +55,16 @@ class Metropolis(Sampler):
         return 'Metropolis-Hastings sampler'
 
 
-def proposal(x, scale=None):
+def proposal(state, scale=1.):
     """ Sample a proposal x from a multivariate normal distribution. """
-    if scale is None:
+    y = []
+    for i, var in enumerate(state):
         try:
-            scale = x.shape
+            size = var.shape
         except AttributeError:
-            scale = np.hstack([x])
-    elif len(scale) != len(x):
-        raise ValueError("x and scale must have same length")
-    cov = np.diagflat(scale)
-    y = np.random.multivariate_normal(x, cov)
-    return y
+            size = 1.
+        y.append(np.random.normal(var, scale[i]))
+    return np.array(y)
 
 
 def accept(x, y, logp):
