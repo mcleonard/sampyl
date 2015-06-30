@@ -7,7 +7,8 @@ def grad_vec(grad_logp, x):
         paramter in x
     """
     try:
-        return np.array([each(*x) for each in grad_logp])
+        grads = np.array([each(*x) for each in grad_logp])
+        return grads
     except TypeError:  # Happens when grad_logp isn't iterable
         grad_logp = [grad_logp]
         return grad_vec(grad_logp, x)

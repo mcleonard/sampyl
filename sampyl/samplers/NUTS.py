@@ -4,11 +4,11 @@ from .hamiltonian import leapfrog, energy, initial_momentum
 
 
 class NUTS(Sampler):
-    def __init__(self, logp, grad_logp=None,
-                 start=None, scale=1., step_size=0.25,
+    def __init__(self, logp,
+                 step_size=0.25,
                  Emax=1000., target_accept=0.65, gamma=0.05,
-                 k=0.75, t0=10.):
-        super().__init__(logp, grad_logp, start, scale)
+                 k=0.75, t0=10., **kwargs):
+        super().__init__(logp, **kwargs)
         self.step_size = step_size / len(self.state)**(1/4.)
         self.Emax = Emax
         self.target_accept = target_accept

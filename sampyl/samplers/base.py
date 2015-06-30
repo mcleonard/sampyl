@@ -4,9 +4,9 @@ from ..utils import count
 
 class Sampler(object):
     # When subclassing, set this to False if grad logp functions aren't needed
-    _grad_logp_flag = True
 
-    def __init__(self, logp, grad_logp=None, start=None, scale=1.):
+    def __init__(self, logp, grad_logp=None, start=None, scale=1.,
+                 condition=None, grad_logp_flag=True):
         self.logp = check_logp(logp)
         self.var_names = logp_var_names(logp)
         self.var_sizes = logp.__annotations__
@@ -15,6 +15,8 @@ class Sampler(object):
         self.sampler = None
         self._sampled = 0
         self._accepted = 0
+        self.conditional = condition
+        self._grad_logp_flag = grad_logp_flag
 
         if self._grad_logp_flag and grad_logp is None:
             self.grad_logp = auto_grad_logp(logp)
@@ -24,6 +26,41 @@ class Sampler(object):
                                 " to the number of parameters in logp.")
             else:
                 self.grad_logp = grad_logp
+
+        if condition is not None:
+            self.joint_logp = self.logp
+
+    def _conditional_step(self):
+        """ Build a conditional logp and sample from it. """
+        if self.conditional is None:
+            return self.step()
+
+        frozen_ind = [self.var_names.index(each) for each in self.conditional]
+        frozen_state = self.state
+        free_ind = [self.var_names.index(i) for i in self.var_names
+                    if i not in self.conditional]
+
+        def conditional_logp(*args):
+            conditional_state = list(args)
+            # Insert conditional values here, then pass to full logp
+            for i in frozen_ind:
+                conditional_state.insert(i, frozen_state[i])
+            return self.joint_logp(*conditional_state)
+
+        self.state = frozen_state[free_ind]
+        self.logp = conditional_logp
+        if self._grad_logp_flag:
+            self.grad_logp = auto_grad_logp(conditional_logp, n=len(self.state))
+        state = self.step()
+
+        # Add the frozen variables back into the state
+        new_state = state.tolist()
+        for i in frozen_ind:
+                new_state.insert(i, frozen_state[i])
+        self.state = np.array(new_state)
+
+        return np.array(new_state)
+
 
     def step(self):
         pass

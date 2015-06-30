@@ -6,8 +6,43 @@ import pytest
 
 np_source = np.__package__
 
-n_samples = 500
+n_samples = 100
 
+
+def test_sample_chain():
+    logp, _ = poisson_delta()
+
+    step1 = smp.Metropolis(logp, condition=['lam2'])
+    step2 = smp.NUTS(logp, condition=['lam1'])
+
+    chain = smp.Chain([step1, step2])
+    trace = chain.sample(n_samples)
+    assert(trace.shape == (n_samples,))
+
+def test_conditional_chain():
+
+    logp, _ = poisson_delta()
+
+    metro = smp.Metropolis(logp, condition=['lam2'])
+    nuts = smp.NUTS(logp, condition=['lam1'])
+
+    start = np.array([1., 1.])
+    metro.state = start
+    state = metro._conditional_step()
+    assert(state[1] == 1.)
+    nuts.state = state
+    state = nuts._conditional_step()
+    assert(len(state) == 2)
+
+
+def test_conditional():
+
+    logp, _ = poisson_delta()
+    start = np.array([1., 1.])
+    metro = smp.Metropolis(logp, start=start, condition=['lam2'])
+    state = metro._conditional_step()
+    assert(len(state) == 2)
+    assert(state[1] == 1.)
 
 def test_metropolis_linear_model():
     logp, _ = linear_model_5features()

@@ -4,9 +4,8 @@ from .base import Sampler
 
 class Metropolis(Sampler):
     # TODO: Allow for sticking in different proposal distributions.
-    _grad_logp_flag = False
-
-    def __init__(self, logp, start=None, scale=1., tune_interval=100):
+    
+    def __init__(self, logp, tune_interval=100, **kwargs):
         """ Metropolis-Hastings sampler for drawing from a distribution 
             defined by a logp function.
 
@@ -25,7 +24,7 @@ class Metropolis(Sampler):
                 number of samples between tunings of scale factor
 
         """
-        super().__init__(logp, None, start=start, scale=scale)
+        super().__init__(logp, None, grad_logp_flag=False, **kwargs)
         self.tune_interval = tune_interval
         self._steps_until_tune = tune_interval
         self._accepted = 0
