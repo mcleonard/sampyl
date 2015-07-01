@@ -1,6 +1,6 @@
-Sampyl
-=======
-June 27th, 2015: version 0.1
+# Sampyl
+
+July 1, 2015: version 0.2
 
 Sampyl is a package for sampling from probability distributions using MCMC methods. Similar to PyMC3 using theano to compute gradients, Sampyl uses [autograd](https://github.com/HIPS/autograd) to compute gradients. However, you are free to write your own gradient functions, autograd is not necessary. This project was started as a way to use MCMC samplers by defining models purely with Python and numpy.
 
@@ -14,22 +14,27 @@ For each sampler, you pass in a function that calculates the log probability of 
 
 It is still under active development with more features coming soon!
 
-Dependencies
------------
+### Dependencies
 
 Works for Python 2 or 3.
 
 Currently, numpy is the only dependency. To use the automatic gradient log-P capabilities, you will need to install [autograd](https://github.com/HIPS/autograd).
 
-Documentation
-------------
+## Installation
+
+Not on PyPI yet, but you can install it like so:
+
+`git clone git+https://github.com/mcleonard/sampyl.git`
+
+### Documentation
+
 Basically none exist right now, will work on that soon. Check out the [example notebook](http://nbviewer.ipython.org/github/mcleonard/sampyl/blob/master/Examples.ipynb) though for some guidance.
 
-Tests
------------
+### Tests
+
 Tests are written for use with pytest, in the tests folder.
 
 
-License
--------
+### License
+
 [Apache License, version 2.0](https://github.com/mcleonard/sampyl/blob/master/LICENSE)
