@@ -4,7 +4,11 @@ from .base import Sampler
 
 class Chain(Sampler):
     def __init__(self, steps, **kwargs):
-        super().__init__(steps[0].logp, **kwargs)
+        try:
+            super().__init__(steps[0].logp, **kwargs)
+        except TypeError:
+            super(Chain, self).__init__(steps[0].logp, **kwargs)
+
         self.steps = steps
 
 

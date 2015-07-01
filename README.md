@@ -17,7 +17,7 @@ It is still under active development with more features coming soon!
 Dependencies
 -----------
 
-Requires Python 3.
+Works for Python 2 or 3.
 
 Currently, numpy is the only dependency. To use the automatic gradient log-P capabilities, you will need to install [autograd](https://github.com/HIPS/autograd).
 

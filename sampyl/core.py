@@ -11,13 +11,14 @@ except ImportError:
     import numpy as np
 
 
-def auto_grad_logp(logp, n=None):
+def auto_grad_logp(logp, names=None):
     """ Automatically builds gradient logps using autograd. Returns as list
         containing one grad logp with respect to each variable in logp.
 
         If logp has unknown number of arguments, you can set n to the desired
         number.
     """
-    if n is None:
+    if names is None:
         n = logp.__code__.co_argcount
-    return [grad(logp, i) for i in range(n)]
+        names = logp.__code__.co_varnames[:n]
+    return {var: grad(logp, i) for i, var in enumerate(names)}

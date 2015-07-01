@@ -1,3 +1,5 @@
+from __future__ import division
+
 from ..core import np
 from .base import Sampler
 from .hamiltonian import leapfrog, energy, initial_momentum
@@ -8,8 +10,12 @@ class NUTS(Sampler):
                  step_size=0.25,
                  Emax=1000., target_accept=0.65, gamma=0.05,
                  k=0.75, t0=10., **kwargs):
-        super().__init__(logp, **kwargs)
-        self.step_size = step_size / len(self.state)**(1/4.)
+        try:
+            super().__init__(logp, **kwargs)
+        except TypeError:
+            super(NUTS, self).__init__(logp, **kwargs)
+
+        self.step_size = step_size / len(self.state.tovector())**(1/4.)
         self.Emax = Emax
         self.target_accept = target_accept
         self.gamma = gamma
@@ -27,14 +33,13 @@ class NUTS(Sampler):
         r0 = initial_momentum(x, self.scale)
         u = np.random.uniform()
         e = self.step_size
-
         xn, xp, rn, rp, y = x, x, r0, r0, x
         j, n, s = 0, 1, 1
 
         while s == 1:
             v = bern(0.5)*2 - 1
             if v == -1:
-                xn, rn, _, _, x1, n1, s1, a, na = buildtree(xn, rn, u, v, j, e, x, r0, 
+                xn, rn, _, _, x1, n1, s1, a, na = buildtree(xn, rn, u, v, j, e, x, r0,
                                                             H, dH, self.Emax)
             else:
                 _, _, xp, rp, x1, n1, s1, a, na = buildtree(xp, rp, u, v, j, e, x, r0,
@@ -43,10 +48,10 @@ class NUTS(Sampler):
             if s1 == 1 and bern(np.min(np.array([1, n1/n]))):
                 y = x1
 
-            dx = np.hstack(xp - xn)
+            dx = (xp - xn).tovector()
+            s = s1 * (np.dot(dx, rn.tovector()) >= 0) * \
+                     (np.dot(dx, rp.tovector()) >= 0)
             n = n + n1
-            s = s1 * (np.dot(dx, np.hstack(rn)) >= 0) * \
-                     (np.dot(dx, np.hstack(rp)) >= 0)
             j = j + 1
 
         m = self._sampled
@@ -55,7 +60,6 @@ class NUTS(Sampler):
         self.step_size = np.exp(self.mu - (m**.5/self.gamma)*self.Hbar)
 
         self.state = y
-        self._accepted += 1
         self._sampled += 1
 
         return y
@@ -72,10 +76,10 @@ def buildtree(x, r, u, v, j, e, x0, r0, H, dH, Emax):
         E0 = energy(H, x0, r0)
         dE = E - E0
 
-        n1 = int(np.log(u) - dE <= 0)
-        s1 = int(np.log(u) - dE < Emax)
+        n1 = (np.log(u) - dE <= 0)
+        s1 = (np.log(u) - dE < Emax)
 
-        return x1, r1, x1, r1, x1, n1, s1, np.min(np.array([1, np.exp(dE)])), 1.
+        return x1, r1, x1, r1, x1, n1, s1, np.min(np.array([1, np.exp(dE)])), 1
     else:
         xn, rn, xp, rp, x1, n1, s1, a1, na1 = \
             buildtree(x, r, u, v, j-1, e, x0, r0, H, dH, Emax)
@@ -92,12 +96,9 @@ def buildtree(x, r, u, v, j, e, x0, r0, H, dH, Emax):
             a1 = a1 + a2
             na1 = na1 + na2
 
-            # Taking the inner product requires a 1D vector, xp, xn, rn, rp
-            # have shapes (len(var1), len(var2), ..., len(var_n)), so need to
-            # hstack these things.
-            dx = np.hstack(xp - xn)
-            s1 = s2 * (np.dot(dx, np.hstack(rn)) >= 0) * \
-                      (np.dot(dx, np.hstack(rp)) >= 0)
+            dx = (xp - xn).tovector()
+            s1 = s2 * (np.dot(dx, rn.tovector()) >= 0) * \
+                      (np.dot(dx, rp.tovector()) >= 0)
             n1 = n1 + n2
         return xn, rn, xp, rp, x1, n1, s1, a1, na1
         

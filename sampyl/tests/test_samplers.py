@@ -19,6 +19,7 @@ def test_sample_chain():
     trace = chain.sample(n_samples)
     assert(trace.shape == (n_samples,))
 
+
 def test_conditional_chain():
 
     logp, _ = poisson_delta()
@@ -26,11 +27,11 @@ def test_conditional_chain():
     metro = smp.Metropolis(logp, condition=['lam2'])
     nuts = smp.NUTS(logp, condition=['lam1'])
 
-    start = np.array([1., 1.])
-    metro.state = start
+    start = {'lam1': 1., 'lam2': 2.}
+    metro.state.update(start)
     state = metro._conditional_step()
-    assert(state[1] == 1.)
-    nuts.state = state
+    assert(state['lam2'] == 2.)
+    nuts.state.update(state)
     state = nuts._conditional_step()
     assert(len(state) == 2)
 
@@ -38,29 +39,29 @@ def test_conditional_chain():
 def test_conditional():
 
     logp, _ = poisson_delta()
-    start = np.array([1., 1.])
+    start = {'lam1': 1., 'lam2': 2.}
     metro = smp.Metropolis(logp, start=start, condition=['lam2'])
     state = metro._conditional_step()
     assert(len(state) == 2)
-    assert(state[1] == 1.)
+    assert(state['lam2'] == 2.)
 
 def test_metropolis_linear_model():
     logp, _ = linear_model_5features()
-    metro = smp.Metropolis(logp)
+    metro = smp.Metropolis(logp, start={'b':np.zeros(5), 'sig': 1.})
     trace = metro.sample(n_samples)
     assert(trace.shape == (n_samples,))
 
 
 def test_hamiltonian_linear_model():
     logp, _ = linear_model_5features()
-    hmc = smp.Hamiltonian(logp)
+    hmc = smp.Hamiltonian(logp, start={'b': np.zeros(5), 'sig': 1.})
     trace = hmc.sample(n_samples)
     assert(trace.shape == (n_samples,))
 
 
 def test_nuts_linear_model():
     logp, _ = linear_model_5features()
-    nuts = smp.NUTS(logp)
+    nuts = smp.NUTS(logp, start={'b': np.zeros(5), 'sig': 1.})
     trace = nuts.sample(n_samples)
     assert(trace.shape == (n_samples,))
 
@@ -103,7 +104,7 @@ def test_NUTS_autograd():
 
 def test_NUTS_pass_grad_logp():
     logp, grad_logp = normal_1D()
-    nuts = smp.NUTS(logp, grad_logp=grad_logp)
+    nuts = smp.NUTS(logp, grad_logp=grad_logp, start={'x':1.})
     trace = nuts.sample(n_samples)
     assert(trace.shape == (n_samples,))
 
@@ -123,13 +124,13 @@ def test_sampler_no_args_logp():
 
 def test_metropolis_two_vars():
     logp, _ = poisson_delta()
-    metro = smp.Metropolis(logp)
+    metro = smp.Metropolis(logp, start={'lam1':1., 'lam2':1.})
     trace = metro.sample(n_samples)
     assert(trace.shape == (n_samples,))
 
 
 def test_metropolis_two_vars_start():
     logp, _ = poisson_delta()
-    metro = smp.Metropolis(logp, start=(1., 1.))
+    metro = smp.Metropolis(logp, start={'lam1':1., 'lam2':1.})
     trace = metro.sample(n_samples)
     assert(trace.shape == (n_samples,))
