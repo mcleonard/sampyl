@@ -16,13 +16,11 @@ classifiers = ['Development Status :: 1 - Pre-Alpha',
                'Operating System :: OS Independent']
 
 if __name__ == "__main__":
-
-setup(name='sampyl',
-      version='0.2',
-      description='MCMC Samplers',
-      author='Mat Leonard',
-      author_email='leonard.mat@gmail.com',
-      url='https://github.com/mcleonard/sampyl.git',
-      packages=['sampyl', 'sampyl.samplers', 'sampyl.tests'],
-      classifiers=classifiers,
-     )
+    setup(name='sampyl',
+          version='0.2',
+          description='MCMC Samplers',
+          author='Mat Leonard',
+          author_email='leonard.mat@gmail.com',
+          url='https://github.com/mcleonard/sampyl.git',
+          packages=['sampyl', 'sampyl.samplers', 'sampyl.tests'],
+          classifiers=classifiers)
