@@ -1,12 +1,9 @@
 from ..core import np, auto_grad_logp
 from ..state import State
 from itertools import count
-from collections import OrderedDict
 
 
 class Sampler(object):
-    # When subclassing, set this to False if grad logp functions aren't needed
-
     def __init__(self, logp, grad_logp=None, start=None, scale=1.,
                  condition=None, grad_logp_flag=True):
         self.logp = check_logp(logp)
@@ -65,8 +62,8 @@ class Sampler(object):
 
         return self.state
 
-
     def step(self):
+        """ This is what you define to create the sampler. """
         pass
 
     def sample(self, num, burn=-1, thin=1):
