@@ -1,7 +1,6 @@
 from ..core import np, auto_grad_logp
 from ..state import State
 from itertools import count
-from ..progressbar import update_progress
 import time
 
 
