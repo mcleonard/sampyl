@@ -42,7 +42,6 @@ def grad_vec(grad_logp, state):
     """ grad_logp should be a list of gradient logps, respective to each
         parameter in x
     """
-    print(grad_logp, state)
     if hasattr(grad_logp, '__call__'):
         return np.array([grad_logp(*state.values())])
     else:
