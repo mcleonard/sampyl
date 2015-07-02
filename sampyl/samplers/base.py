@@ -1,6 +1,8 @@
 from ..core import np, auto_grad_logp
 from ..state import State
 from itertools import count
+from ..progressbar import update_progress
+import time
 
 
 class Sampler(object):
@@ -48,7 +50,6 @@ class Sampler(object):
         self.logp = conditional_logp
         if self._grad_logp_flag:
             self.grad_logp = auto_grad_logp(conditional_logp, names=self.state.keys())
-        print(self.state)
         state = self.step()
 
         # Add the frozen variables back into the state
@@ -84,8 +85,14 @@ class Sampler(object):
 
         dtypes = [(var, 'f8', np.shape(self.state[var])) for var in self.state]
         samples = np.zeros(num, dtype=dtypes).view(np.recarray)
+        start = time.time()
         for i in range(num):
             samples[i] = next(self.sampler).tovector()
+
+            if time.time() - start > 5:
+                update_progress(i, num)
+                start = time.time()
+
 
         return samples[burn+1::thin]
 

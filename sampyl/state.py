@@ -56,7 +56,6 @@ def special_math_func(state, other, operator):
             results = [getattr(state[each], operator)(other[each])
                        for each in state]
         except IndexError:
-            print(state, other)
             # Both are iterables, but other is not a dictionary
             results = [getattr(state[i], operator)(j)
                        for i, j in zip(state, other)]
