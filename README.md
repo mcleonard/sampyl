@@ -24,7 +24,7 @@ Currently, numpy is the only dependency. To use the automatic gradient log-P cap
 
 Not on PyPI yet, but you can install it like so:
 
-`git clone git+https://github.com/mcleonard/sampyl.git`
+`pip install git+https://github.com/mcleonard/sampyl.git`
 
 ### Documentation
 
