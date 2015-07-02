@@ -83,10 +83,9 @@ class Sampler(object):
 
         dtypes = [(var, 'f8', np.shape(self.state[var])) for var in self.state]
         samples = np.zeros(num, dtype=dtypes).view(np.recarray)
-        start = time.time()
         for i in range(num):
             samples[i] = next(self.sampler).tovector()
-            
+
         return samples[burn+1::thin]
 
 
