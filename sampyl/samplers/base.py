@@ -1,7 +1,6 @@
 from ..core import np, auto_grad_logp
 from ..state import State
 from itertools import count
-import time
 
 
 class Sampler(object):
@@ -87,12 +86,7 @@ class Sampler(object):
         start = time.time()
         for i in range(num):
             samples[i] = next(self.sampler).tovector()
-
-            if time.time() - start > 5:
-                update_progress(i, num)
-                start = time.time()
-
-
+            
         return samples[burn+1::thin]
 
 
