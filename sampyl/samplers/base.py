@@ -4,12 +4,17 @@ from itertools import count
 
 
 class Sampler(object):
-    def __init__(self, logp, grad_logp=None, start=None, scale=1.,
-                 condition=None, grad_logp_flag=True):
+    def __init__(self, logp, start,
+                 grad_logp      = None,
+                 scale          = None,
+                 condition      = None,
+                 grad_logp_flag = True):
         self.logp = check_logp(logp)
         self.var_names = logp_var_names(logp)
-        self.state = default_start(start, self.var_names)
-        self.scale = scale*np.ones(len(self.var_names))
+        self.state = State.fromkeys(self.var_names)
+        self.state.update(start)
+
+        self.scale = default_scale(scale, self.state)
         self.sampler = None
         self._sampled = 0
         self._accepted = 0
@@ -98,15 +103,18 @@ def check_logp(logp):
         return logp
 
 
-
-def default_start(start, var_names):
-    """ If start is None, return a zeros array with length equal to the number
-        of arguments in logp
+def default_scale(scale, state):
+    """ If scale is None, return a State object with arrays of ones matching
+        the shape of values in state.
     """
-    state = State([(name, 1.) for name in var_names])
-    if start is not None:
-        state.update(start)
-    return state
+
+    if scale is None:
+        new_scale = State.fromkeys(state.keys())
+        for var in state:
+            new_scale.update({var: np.ones(np.shape(state[var]))})
+        return new_scale
+    else:
+        return scale
 
 
 def logp_var_names(logp):

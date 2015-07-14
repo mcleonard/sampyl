@@ -1,5 +1,5 @@
 import sys
-sys.path.append('.')
+sys.path.append('..')
 import sampyl as smp
 from sampyl import np
 from sampyl.diagnostics import diagnostics
@@ -15,18 +15,19 @@ def logp(x, y):
     return -.5 * np.dot(np.dot(d, icov), d)
 #logp_xy = lambda(th): logp(th[0], th[1])
 
+start = {'x': 1., 'y': 1.}
 # compare the performance of NUTS and Metropolis by effective sample size
-nuts = smp.NUTS(logp)
+nuts = smp.NUTS(logp, start)
 nuts_trace = nuts.sample(1000)
 
-met = smp.Metropolis(logp)
+met = smp.Metropolis(logp, start)
 met_trace = met.sample(1000)
 
 # compute effective sample size based on autocorrelation
 nuts_eff = diagnostics.compute_n_eff_acf(nuts_trace.x)
 met_eff = diagnostics.compute_n_eff_acf(met_trace.x)
-print "NUTS effective sample size: %2.2f"%nuts_eff
-print "MH   effective sample size: %2.2f"%met_eff
+print("NUTS effective sample size: {:0.2f}".format(nuts_eff))
+print("MH   effective sample size: {:0.2f}".format(met_eff))
 
 # graphically compare samples
 fig, axarr = plt.subplots(1, 2)
