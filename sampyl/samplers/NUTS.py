@@ -7,7 +7,7 @@ from .hamiltonian import leapfrog, energy, initial_momentum
 
 class NUTS(Sampler):
     def __init__(self, logp,
-                 step_size=0.25,
+                 step_size=0.25, adapt_steps=100,
                  Emax=1000., target_accept=0.65, gamma=0.05,
                  k=0.75, t0=10., **kwargs):
         try:
@@ -16,13 +16,15 @@ class NUTS(Sampler):
             super(NUTS, self).__init__(logp, **kwargs)
 
         self.step_size = step_size / len(self.state.tovector())**(1/4.)
+        self.adapt_steps = adapt_steps
         self.Emax = Emax
         self.target_accept = target_accept
         self.gamma = gamma
         self.k = k
         self.t0 = t0
 
-        self.Hbar = 0
+        self.Hbar = 0.
+        self.ebar = 1.
         self.mu = np.log(self.step_size*10)
 
     def step(self):
@@ -54,10 +56,17 @@ class NUTS(Sampler):
             n = n + n1
             j = j + 1
 
-        m = self._sampled
-        w = 1./(m + self.t0)
-        self.Hbar = (1 - w)*self.Hbar + w*(self.target_accept - a*1./na)
-        self.step_size = np.exp(self.mu - (m**.5/self.gamma)*self.Hbar)
+        if self._sampled >= self.adapt_steps:
+            self.step_size = self.ebar
+        else:
+            # Adapt step size
+            m = self._sampled + 1
+            w = 1./(m + self.t0)
+            self.Hbar = (1 - w)*self.Hbar + w*(self.target_accept - a/na)
+            log_e = self.mu - (m**.5/self.gamma)*self.Hbar
+            self.step_size = np.exp(log_e)
+            z = m**(-self.k)
+            self.ebar = np.exp(z*log_e + (1 - z)*np.log(self.ebar))
 
         self.state = y
         self._sampled += 1
@@ -78,7 +87,6 @@ def buildtree(x, r, u, v, j, e, x0, r0, H, dH, Emax):
 
         n1 = (np.log(u) - dE <= 0)
         s1 = (np.log(u) - dE < Emax)
-
         return x1, r1, x1, r1, x1, n1, s1, np.min(np.array([1, np.exp(dE)])), 1
     else:
         xn, rn, xp, rp, x1, n1, s1, a1, na1 = \
