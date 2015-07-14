@@ -6,14 +6,19 @@ from .hamiltonian import leapfrog, energy, initial_momentum
 
 
 class NUTS(Sampler):
-    def __init__(self, logp,
-                 step_size=0.25, adapt_steps=100,
-                 Emax=1000., target_accept=0.65, gamma=0.05,
-                 k=0.75, t0=10., **kwargs):
+    def __init__(self, logp, start,
+                 step_size     = 0.25,
+                 adapt_steps   = 100,
+                 Emax          = 1000.,
+                 target_accept = 0.65,
+                 gamma         = 0.05,
+                 k             = 0.75,
+                 t0            = 10.,
+                 **kwargs):
         try:
-            super().__init__(logp, **kwargs)
+            super().__init__(logp, start, **kwargs)
         except TypeError:
-            super(NUTS, self).__init__(logp, **kwargs)
+            super(NUTS, self).__init__(logp, start, **kwargs)
 
         self.step_size = step_size / len(self.state.tovector())**(1/4.)
         self.adapt_steps = adapt_steps

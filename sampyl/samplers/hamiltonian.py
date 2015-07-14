@@ -6,12 +6,12 @@ from .base import Sampler
 
 
 class Hamiltonian(Sampler):
-    def __init__(self, logp, step_size=1, n_steps=5, **kwargs):
+    def __init__(self, logp, start, step_size=1, n_steps=5, **kwargs):
 
         try:
-            super().__init__(logp, **kwargs)
+            super().__init__(logp, start, **kwargs)
         except TypeError:
-            super(Hamiltonian, self).__init__(logp, **kwargs)
+            super(Hamiltonian, self).__init__(logp, start, **kwargs)
 
         self.step_size = step_size / (np.hstack(self.state.values()).size)**(1/4)
         self.n_steps = n_steps
@@ -68,8 +68,20 @@ def energy(logp, x, r):
 
 
 def initial_momentum(state, scale):
-    r = State.fromkeys(state.keys())
-    for i, var in enumerate(state):
+    new = State.fromkeys(state.keys())
+    for var in state:
         mu = np.zeros(np.shape(state[var]))
-        r.update({var: np.random.normal(mu, scale[i])})
-    return r
+        cov = np.diagflat(scale[var])
+        try:
+            new.update({var: np.random.multivariate_normal(mu, cov)})
+        except ValueError:
+            # If the var is a single float
+            new.update({var: np.random.normal(0, scale[var])})
+
+    
+    # for i, var in enumerate(state):
+    #     mu = np.zeros(np.shape(state[var]))
+    #     r.update({var: np.random.normal(mu, scale[i])})
+    # return r
+    
+    return new

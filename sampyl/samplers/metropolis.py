@@ -8,7 +8,7 @@ from .base import Sampler
 class Metropolis(Sampler):
     # TODO: Allow for sticking in different proposal distributions.
 
-    def __init__(self, logp, tune_interval=100, **kwargs):
+    def __init__(self, logp, start, tune_interval=100, **kwargs):
         """ Metropolis-Hastings sampler for drawing from a distribution
             defined by a logp function.
 
@@ -28,9 +28,9 @@ class Metropolis(Sampler):
 
         """
         try:
-            super().__init__(logp, None, grad_logp_flag=False, **kwargs)
+            super().__init__(logp, start, None, grad_logp_flag=False, **kwargs)
         except TypeError:
-            super(Metropolis, self).__init__(logp, None, grad_logp_flag=False,
+            super(Metropolis, self).__init__(logp, start, None, grad_logp_flag=False,
                                              **kwargs)
         self.tune_interval = tune_interval
         self._steps_until_tune = tune_interval
@@ -65,7 +65,7 @@ def proposal(state, scale):
     """ Sample a proposal x from a multivariate normal distribution. """
     proposed = State.fromkeys(state.keys())
     for i, var in enumerate(state):
-        proposed.update({var: np.random.normal(state[var], scale[i])})
+        proposed.update({var: np.random.normal(state[var], scale[var])})
     return proposed
 
 
