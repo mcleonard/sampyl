@@ -9,6 +9,7 @@ class Slice(Sampler):
     # TODO: Allow for sticking in different proposal distributions.
 
     def __init__(self, logp,
+                       start,
                        compwise      = False, 
                        width         = 1.,
                        step_out      = True,
@@ -46,9 +47,9 @@ class Slice(Sampler):
                 print steps out
         """
         try:
-            super().__init__(logp, None, grad_logp_flag=False, **kwargs)
+            super().__init__(logp, start, None, grad_logp_flag=False, **kwargs)
         except TypeError:
-            super(Slice, self).__init__(logp, None, grad_logp_flag=False,
+            super(Slice, self).__init__(logp, start, None, grad_logp_flag=False,
                                              **kwargs)
         self._num_evals = 0
 

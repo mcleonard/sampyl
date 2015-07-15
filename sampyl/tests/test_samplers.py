@@ -144,3 +144,20 @@ def test_metropolis_two_vars_start():
     metro = smp.Metropolis(logp, start)
     trace = metro.sample(n_samples)
     assert(trace.shape == (n_samples,))
+
+def test_slice():
+    logp, _ = normal_1D()
+    start = {'x': 1.}
+    slice = smp.Slice(logp, start)
+    trace = slice.sample(n_samples)
+    assert(trace.shape == (n_samples,))
+
+def test_slice_two_vars():
+    logp, _ = poisson_delta()
+    start = {'lam1': 1., 'lam2': 1.}
+    slice = smp.Slice(logp, start)
+    trace = slice.sample(n_samples)
+    assert(trace.shape == (n_samples,))
+
+
+
