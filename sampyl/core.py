@@ -5,9 +5,11 @@
 # so that if autograd is installed, the other files will use its numpy.
 # Otherwise, just use the normal numpy.
 try:
+    AUTOGRAD = True
     import autograd.numpy as np
     from autograd import grad
 except ImportError:
+    AUTOGRAD = False
     import numpy as np
 
 
