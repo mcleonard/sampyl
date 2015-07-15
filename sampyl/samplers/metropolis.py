@@ -23,7 +23,7 @@ class Metropolis(Sampler):
                 starting state for sampler
             scale: scalar or 1D array-like
                 initial scaling factor for proposal distribution
-            tune_interval: int 
+            tune_interval: int
                 number of samples between tunings of scale factor
 
         """
@@ -35,7 +35,6 @@ class Metropolis(Sampler):
         self.tune_interval = tune_interval
         self._steps_until_tune = tune_interval
         self._accepted = 0
-        print self.state
 
     def step(self):
         """ Perform a Metropolis-Hastings step. """
