@@ -1,7 +1,7 @@
 """ Module for calculating the maximum a posteriori for use in a starting
     value for the samplers. """
 
-from .core import np, AUTOGRAD
+from .core import np, AUTOGRAD, auto_grad_logp
 from scipy.optimize import minimize
 from .state import State
 
@@ -25,7 +25,7 @@ def find_MAP(logp, start, grad_logp=None,
         return -1*logp(*args.values())
 
     if AUTOGRAD and grad_logp is None:
-        jac = grad(neg_logp, 0)
+        jac = auto_grad_logp(neg_logp)['x']
     else:
         jac = grad_logp
 

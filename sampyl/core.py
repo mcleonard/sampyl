@@ -20,6 +20,8 @@ def auto_grad_logp(logp, names=None):
         If logp has unknown number of arguments, you can set n to the desired
         number.
     """
+    if AUTOGRAD is False:
+        return None
     if names is None:
         n = logp.__code__.co_argcount
         names = logp.__code__.co_varnames[:n]

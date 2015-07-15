@@ -27,6 +27,11 @@ class State(OrderedDict):
             i += var_sizes[var]
         return State(zip(state.keys(), vals))
 
+    @staticmethod
+    def fromfunc(func):
+        var_names = func_var_names(func)
+        return State.fromkeys(var_names)
+
     def size(self):
         return State([(var, np.size(self[var])) for var in self])
 
@@ -79,3 +84,9 @@ def special_math_func(state, other, operator):
                        for i, j in zip(state, other)]
     out = State(zip(state.keys(), results))
     return out
+
+
+def func_var_names(func):
+    """ Returns a list of the argument names in func """
+    names = func.__code__.co_varnames[:func.__code__.co_argcount]
+    return names
