@@ -139,8 +139,8 @@ class Slice(Sampler):
             new_z     = (upper - lower)*np.random.rand() + lower
             new_llh   = dir_logprob(new_z)
             if np.isnan(new_llh):
-                print new_z, direction*new_z + init_x, new_llh, \
-                      llh_s, init_x, logprob(init_x)
+                print(new_z, direction*new_z + init_x, new_llh,
+                      llh_s, init_x, logprob(init_x))
                 raise Exception("Slice sampler got a NaN")
             if new_llh > llh_s and \
                     acceptable(new_z, llh_s, start_lower, start_upper):
@@ -153,7 +153,7 @@ class Slice(Sampler):
                 raise Exception("Slice sampler shrank to zero!")
 
         if self.verbose:
-            print "Steps Out:", l_steps_out, u_steps_out, " Steps In:", steps_in
+            print("Steps Out:", l_steps_out, u_steps_out, " Steps In:", steps_in)
 
         return new_z*direction + init_x
 
