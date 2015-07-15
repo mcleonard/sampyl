@@ -9,6 +9,24 @@ class State(OrderedDict):
     def tovector(self):
         return np.hstack(self.values())
 
+    def fromvector(self, vec):
+        var_sizes = self.size()
+        i = 0
+        for var in self:
+            self[var] = np.squeeze(vec[i:(i+var_sizes[var])])
+            i += var_sizes[var]
+        return self
+
+    @staticmethod
+    def init_fromvector(vec, state):
+        vals = []
+        var_sizes = state.size()
+        i = 0
+        for var in state:
+            vals.append(np.squeeze(vec[i:(i+var_sizes[var])]))
+            i += var_sizes[var]
+        return State(zip(state.keys(), vals))
+
     def size(self):
         return State([(var, np.size(self[var])) for var in self])
 

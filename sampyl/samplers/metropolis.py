@@ -35,6 +35,7 @@ class Metropolis(Sampler):
         self.tune_interval = tune_interval
         self._steps_until_tune = tune_interval
         self._accepted = 0
+        print self.state
 
     def step(self):
         """ Perform a Metropolis-Hastings step. """
