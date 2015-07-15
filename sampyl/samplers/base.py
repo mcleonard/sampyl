@@ -1,5 +1,5 @@
 from ..core import np, auto_grad_logp
-from ..state import State
+from ..state import State, func_var_names
 from itertools import count
 from ..progressbar import update_progress
 import time
@@ -12,8 +12,8 @@ class Sampler(object):
                  condition      = None,
                  grad_logp_flag = True):
         self.logp = check_logp(logp)
-        self.var_names = logp_var_names(logp)
-        self.state = State.fromkeys(self.var_names)
+        self.var_names = func_var_names(logp)
+        self.state = State.fromfunc(logp)
         self.state.update(start)
 
         self.scale = default_scale(scale, self.state)
@@ -127,9 +127,3 @@ def default_scale(scale, state):
         return new_scale
     else:
         return scale
-
-
-def logp_var_names(logp):
-    """ Returns a list of the argument names in logp """
-    names = logp.__code__.co_varnames[:logp.__code__.co_argcount]
-    return names
