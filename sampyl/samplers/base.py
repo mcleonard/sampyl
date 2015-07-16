@@ -1,6 +1,8 @@
 from ..core import np, auto_grad_logp
 from ..state import State
 from itertools import count
+from ..progressbar import update_progress
+import time
 
 
 class Sampler(object):
@@ -70,7 +72,7 @@ class Sampler(object):
         """ This is what you define to create the sampler. """
         pass
 
-    def sample(self, num, burn=-1, thin=1):
+    def sample(self, num, burn=-1, thin=1, progress_bar=True):
         """ Sample from distribution defined by logp.
 
             Parameters
@@ -82,14 +84,24 @@ class Sampler(object):
                 Number of samples to burn through
             thin: thin
                 Thin the samples by this factor
+            progress_bar: boolean
+                Show the progress bar, default = True
         """
         if self.sampler is None:
             self.sampler = (self.step() for _ in count(start=0, step=1))
 
         dtypes = [(var, 'f8', np.shape(self.state[var])) for var in self.state]
         samples = np.zeros(num, dtype=dtypes).view(np.recarray)
+        start_time = time.time()
         for i in range(num):
             samples[i] = next(self.sampler).tovector()
+
+            if progress_bar and time.time() - start_time > 1:
+                update_progress(i+1, num)
+                start_time = time.time()
+
+        if progress_bar:
+            update_progress(i+1, num, end=True)
 
         return samples[burn+1::thin]
 
