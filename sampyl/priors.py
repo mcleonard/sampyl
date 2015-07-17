@@ -10,7 +10,7 @@ OUTOFBOUNDS = -np.inf
 
 def bound(f, *conditions):
     for each in conditions:
-        if not np.any(each):
+        if not np.all(each):
             return OUTOFBOUNDS
     else:
         return f
@@ -23,7 +23,7 @@ def prior_map(func, arr, **kwargs):
 
 def uniform(x, lower=0., upper=1.):
     logp = lambda lower, upper: -np.log(upper-lower)
-    out = bound(logp(lower, upper), x > lower, x < upper)
+    out = bound(logp(lower, upper), lower < x < upper)
     return out
 
 

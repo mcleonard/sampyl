@@ -1,20 +1,27 @@
 from ..core import np, auto_grad_logp
-from ..utils import count
+from ..state import State
+from itertools import count
+from ..progressbar import update_progress
+import time
 
 
 class Sampler(object):
-    # When subclassing, set this to False if grad logp functions aren't needed
-    _grad_logp_flag = True
-
-    def __init__(self, logp, grad_logp=None, start=None, scale=1.):
+    def __init__(self, logp, start,
+                 grad_logp      = None,
+                 scale          = None,
+                 condition      = None,
+                 grad_logp_flag = True):
         self.logp = check_logp(logp)
         self.var_names = logp_var_names(logp)
-        self.var_sizes = logp.__annotations__
-        self.state = default_start(start, logp)
-        self.scale = scale*np.ones(len(self.var_names))
+        self.state = State.fromkeys(self.var_names)
+        self.state.update(start)
+
+        self.scale = default_scale(scale, self.state)
         self.sampler = None
         self._sampled = 0
         self._accepted = 0
+        self.conditional = condition
+        self._grad_logp_flag = grad_logp_flag
 
         if self._grad_logp_flag and grad_logp is None:
             self.grad_logp = auto_grad_logp(logp)
@@ -25,10 +32,47 @@ class Sampler(object):
             else:
                 self.grad_logp = grad_logp
 
+        if condition is not None:
+            self.joint_logp = self.logp
+
+    def _conditional_step(self):
+        """ Build a conditional logp and sample from it. """
+        if self.conditional is None:
+            return self.step()
+
+        frozen_vars = self.conditional
+        frozen_state = self.state
+        free_vars = [var for var in self.state if var not in frozen_vars]
+
+        def conditional_logp(*args):
+            conditional_state = State([each for each in zip(free_vars, args)])
+            # Insert conditional values here, then pass to full logp
+            for i in frozen_vars:
+                conditional_state.update({i: frozen_state[i]})
+            return self.joint_logp(**conditional_state)
+
+        self.state = State([(var, frozen_state[var]) for var in free_vars])
+        self.logp = conditional_logp
+        if self._grad_logp_flag:
+            self.grad_logp = auto_grad_logp(conditional_logp, names=self.state.keys())
+        state = self.step()
+
+        # Add the frozen variables back into the state
+        new_state = State([(name, None) for name in self.var_names])
+        for var in state:
+            new_state.update({var: state[var]})
+        for var in frozen_vars:
+            new_state.update({var: frozen_state[var]})
+
+        self.state = new_state
+
+        return self.state
+
     def step(self):
+        """ This is what you define to create the sampler. """
         pass
 
-    def sample(self, num, burn=-1, thin=1):
+    def sample(self, num, burn=-1, thin=1, progress_bar=True):
         """ Sample from distribution defined by logp.
 
             Parameters
@@ -40,14 +84,24 @@ class Sampler(object):
                 Number of samples to burn through
             thin: thin
                 Thin the samples by this factor
+            progress_bar: boolean
+                Show the progress bar, default = True
         """
         if self.sampler is None:
             self.sampler = (self.step() for _ in count(start=0, step=1))
 
-        dtypes = [(field, 'f8', self.var_sizes[field]) for field in self.var_names]
+        dtypes = [(var, 'f8', np.shape(self.state[var])) for var in self.state]
         samples = np.zeros(num, dtype=dtypes).view(np.recarray)
+        start_time = time.time()
         for i in range(num):
-            samples[i] = np.hstack(next(self.sampler))
+            samples[i] = next(self.sampler).tovector()
+
+            if progress_bar and time.time() - start_time > 1:
+                update_progress(i+1, num)
+                start_time = time.time()
+
+        if progress_bar:
+            update_progress(i+1, num, end=True)
 
         return samples[burn+1::thin]
 
@@ -61,33 +115,21 @@ def check_logp(logp):
         return logp
 
 
-
-def default_start(start, logp):
-    """ If start is None, return a zeros array with length equal to the number
-        of arguments in logp
+def default_scale(scale, state):
+    """ If scale is None, return a State object with arrays of ones matching
+        the shape of values in state.
     """
-    var_sizes = logp.__annotations__
-    var_names = logp.__code__.co_varnames[:logp.__code__.co_argcount]
-    for each in var_names:
-        if each not in var_sizes:
-            var_sizes.update({each: 1})
 
-    if start is None:
-        start = [np.ones(var_sizes[each]) for each in var_names]
-        return np.array(start)
+    if scale is None:
+        new_scale = State.fromkeys(state.keys())
+        for var in state:
+            new_scale.update({var: np.ones(np.shape(state[var]))})
+        return new_scale
     else:
-        # Check that start has the correct sizes
-        for i, var in enumerate(start):
-            var_size = var_sizes[var_names[i]]
-            if var_size > 1 and len(var) != var_size:
-                raise ValueError("start must match sizes defined in logp")
-        else:
-            return np.array(start)
+        return scale
 
 
 def logp_var_names(logp):
     """ Returns a list of the argument names in logp """
-    # Putting underscores after the names so that variables names don't
-    # conflict with built in attributes
     names = logp.__code__.co_varnames[:logp.__code__.co_argcount]
     return names

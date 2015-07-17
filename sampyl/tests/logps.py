@@ -1,3 +1,5 @@
+from __future__ import division
+
 from ..core import np
 from ..priors import bound, prior_map
 import sampyl as smp
@@ -5,10 +7,13 @@ import sampyl as smp
 
 def normal_1D():
     mu, sig = 3, 2
-    logp = lambda x: -0.5*np.log(2*np.pi) - \
-                      0.5*np.log(sig**2) - \
-                      np.sum((x - mu)**2)/(2*sig**2)
-    grad_logp = lambda x: -2*(x - mu)/(2*sig**2)
+
+    def logp(x):
+        return -0.5*np.log(2*np.pi) - 0.5*np.log(sig**2) - \
+                np.sum((x - mu)**2)/(2*sig**2)
+
+    def grad_logp(x=0.):
+        return -2*(x - mu)/(2*sig**2)
     return logp, grad_logp
 
 
@@ -38,7 +43,7 @@ def poisson_delta():
     def logp(lam1, lam2):
         # Rates for Poisson must be > 0
         if lam1 <= 0 or lam2 <=0:
-            return -100000.
+            return -np.inf
         else:
             # logps for likelihoods
             llh1 = np.sum(before*np.log(lam1)) - before.size*lam1
@@ -57,15 +62,17 @@ def linear_model_5features():
     true_b = np.random.randn(5)
     x = np.random.rand(5, 10)
     data = np.dot(true_b, x)
-    def logp(b: 5, sig):
+
+    def logp(b, sig):
         mu = np.dot(b, x)
         n = len(data)
         likelihood = -n*0.5*np.log(2*np.pi) - \
                       n*0.5*np.log(sig**2) - \
                       np.sum((data - mu)**2)/(2*sig**2)
         prior_sig = bound(-np.log(np.abs(sig)), sig <= 0)
-        prior_b = prior_map(smp.priors.uniform, b, lower=-5, upper=5)
-        return likelihood + prior_sig + prior_b.sum()
+        prior_b = prior_map(smp.priors.uniform, b, lower=-5, upper=5).sum()
+        return likelihood + prior_sig + prior_b
+
     def grad_logp():
         pass
 

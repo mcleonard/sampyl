@@ -1,14 +1,19 @@
+from __future__ import division
+
 from ..core import np
-from ..utils import grad_vec
+from ..state import State
 from .base import Sampler
 
 
 class Hamiltonian(Sampler):
-    def __init__(self, logp, grad_logp=None, start=None, scale=1.,
-                 step_size=1, n_steps=5):
+    def __init__(self, logp, start, step_size=1, n_steps=5, **kwargs):
 
-        super().__init__(logp, grad_logp, start=start, scale=scale)
-        self.step_size = step_size / sum(self.var_sizes.values())**(1/4)
+        try:
+            super().__init__(logp, start, **kwargs)
+        except TypeError:
+            super(Hamiltonian, self).__init__(logp, start, **kwargs)
+
+        self.step_size = step_size / (np.hstack(self.state.values()).size)**(1/4)
         self.n_steps = n_steps
 
     def step(self):
@@ -33,10 +38,20 @@ class Hamiltonian(Sampler):
         return self._accepted/self._sampled
 
 
+def grad_vec(grad_logp, state):
+    """ grad_logp should be a list of gradient logps, respective to each
+        parameter in x
+    """
+    if hasattr(grad_logp, '__call__'):
+        return np.array([grad_logp(*state.values())])
+    else:
+        return np.array([grad_logp[each](*state.values()) for each in state])
+
+
 def leapfrog(x, r, step_size, grad_logp):
     r_new = r + step_size/2*grad_vec(grad_logp, x)
     x_new = x + step_size*r_new
-    r_new = r_new + (step_size/2)*grad_vec(grad_logp, x_new)
+    r_new = r_new + step_size/2*grad_vec(grad_logp, x_new)
     return x_new, r_new
 
 
@@ -48,13 +63,25 @@ def accept(x, y, r_0, r, logp):
 
 
 def energy(logp, x, r):
-    # Need to stack r into a 1D vector before taking inner product
-    r1 = np.hstack(r)
-    return logp(*x) - 0.5*np.dot(r1, r1)
+    r1 = r.tovector()
+    return logp(*x.values()) - 0.5*np.dot(r1, r1)
 
 
 def initial_momentum(state, scale):
-    r = []
-    for i, var in enumerate(state):
-        r.append(np.random.normal(np.zeros(var.shape), scale[i]))
-    return np.array(r)
+    new = State.fromkeys(state.keys())
+    for var in state:
+        mu = np.zeros(np.shape(state[var]))
+        cov = np.diagflat(scale[var])
+        try:
+            new.update({var: np.random.multivariate_normal(mu, cov)})
+        except ValueError:
+            # If the var is a single float
+            new.update({var: np.random.normal(0, scale[var])})
+
+    
+    # for i, var in enumerate(state):
+    #     mu = np.zeros(np.shape(state[var]))
+    #     r.update({var: np.random.normal(mu, scale[i])})
+    # return r
+    
+    return new

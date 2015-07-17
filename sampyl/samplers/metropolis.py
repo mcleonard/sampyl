@@ -1,13 +1,15 @@
+from __future__ import division
+
 from ..core import np
+from ..state import State
 from .base import Sampler
 
 
 class Metropolis(Sampler):
     # TODO: Allow for sticking in different proposal distributions.
-    _grad_logp_flag = False
 
-    def __init__(self, logp, start=None, scale=1., tune_interval=100):
-        """ Metropolis-Hastings sampler for drawing from a distribution 
+    def __init__(self, logp, start, tune_interval=100, **kwargs):
+        """ Metropolis-Hastings sampler for drawing from a distribution
             defined by a logp function.
 
             Has automatic scaling such that acceptance rate stays around 50%
@@ -25,10 +27,15 @@ class Metropolis(Sampler):
                 number of samples between tunings of scale factor
 
         """
-        super().__init__(logp, None, start=start, scale=scale)
+        try:
+            super().__init__(logp, start, None, grad_logp_flag=False, **kwargs)
+        except TypeError:
+            super(Metropolis, self).__init__(logp, start, None, grad_logp_flag=False,
+                                             **kwargs)
         self.tune_interval = tune_interval
         self._steps_until_tune = tune_interval
         self._accepted = 0
+        print self.state
 
     def step(self):
         """ Perform a Metropolis-Hastings step. """
@@ -55,24 +62,19 @@ class Metropolis(Sampler):
         return 'Metropolis-Hastings sampler'
 
 
-def proposal(state, scale=1.):
+def proposal(state, scale):
     """ Sample a proposal x from a multivariate normal distribution. """
-    y = []
+    proposed = State.fromkeys(state.keys())
     for i, var in enumerate(state):
-        try:
-            size = var.shape
-        except AttributeError:
-            size = 1.
-        y.append(np.random.normal(var, scale[i]))
-    return np.array(y)
+        proposed.update({var: np.random.normal(state[var], scale[var])})
+    return proposed
 
 
 def accept(x, y, logp):
     """ Return a boolean indicating if the proposed sample should be accepted,
         given the logp ratio logp(y)/logp(x).
     """
-    delp = logp(*y) - logp(*x)
-
+    delp = logp(*y.values()) - logp(*x.values())
     if np.isfinite(delp) and np.log(np.random.uniform()) < delp:
         return True
     else:
