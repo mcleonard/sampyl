@@ -7,9 +7,53 @@ from .state import State
 
 
 def find_MAP(logp, start, grad_logp=None,
-             method=None, bounds=None, verbose=False):
+             method=None, bounds=None, verbose=False, **kwargs):
 
-    """ Find the maximum a posteriori of logp. Requires a starting state. """
+    """ Find the maximum a posteriori of logp. Requires a starting state.
+        Optimizing is done with scipy.optimize.minimize. Documentation can be
+        found here:
+        http://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html
+
+        Arguments
+        ---------
+        logp: function
+            log P(X) function for sampling distribution
+        start: dict
+            Dictionary of starting state for the optimizer. Should have one
+            element for each argument of logp. So, if logp = f(x, y), then
+            start = {'x': x_start, 'y': y_start}
+
+        Keyword Arguments
+        -----------------
+        grad_logp: function
+            grad log P(X) function for calculating the gradient. Uses autograd
+            automatically if it is installed. Otherwise, you can pass in a
+            gradient function to the optimizer.
+        method: string
+            Optimizing method, one of these or a callable function:
+                'Nelder-Mead'
+                'Powell'
+                'CG'
+                'BFGS'
+                'Newton-CG'
+                'Anneal (deprecated as of scipy version 0.14.0)'
+                'L-BFGS-B'
+                'TNC'
+                'COBYLA'
+                'SLSQP'
+                'dogleg'
+                'trust-ncg'
+                custom - a callable object (added in version 0.14.0)
+            If not given, chosen to be one of BFGS, L-BFGS-B, SLSQP, depending 
+            if the problem has constraints or bounds.
+        bounds: dict of tuples
+            Tuples of bounding values for each parameter, example:
+            bounds = {'x': (low, high), 'y': (low, high)}
+            Use None if not bounded in a direction, ex: {'x': (0, None)}
+        verbose: boolean
+            Set to True to print out optimization information
+
+    """
 
     # Making sure to get the keys from logp function so that arguments are
     # ordered correctly, then update from starting state.
@@ -41,7 +85,7 @@ def find_MAP(logp, start, grad_logp=None,
         bnds = None
 
     results = minimize(neg_logp, state.tovector(),
-                       jac=jac, method=method, bounds=bnds)
+                       jac=jac, method=method, bounds=bnds, **kwargs)
 
     if verbose:
         print(results)

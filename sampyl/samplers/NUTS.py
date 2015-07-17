@@ -25,7 +25,7 @@ class NUTS(Sampler):
             Arguments
             ----------
             logp: function
-                Function which calculates log P(theta)
+                log P(X) function for sampling distribution
             start: dict
                 Dictionary of starting state for the sampler. Should have one
                 element for each argument of logp. So, if logp = f(x, y), then
