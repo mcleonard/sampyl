@@ -1,5 +1,6 @@
 """ Core file used for things a bunch of other files need. """
 
+from .exceptions import AutogradError
 
 # Basically, all other files will import numpy from here. I did this way
 # so that if autograd is installed, the other files will use its numpy.
@@ -21,7 +22,8 @@ def auto_grad_logp(logp, names=None):
         number.
     """
     if AUTOGRAD is False:
-        return None
+        raise AutogradError("Install autograd to use automatic "
+                            "gradient functionality.")
     if names is None:
         n = logp.__code__.co_argcount
         names = logp.__code__.co_varnames[:n]

@@ -8,13 +8,9 @@ class Chain(Sampler):
         logps = [each.logp for each in steps]
         logp_index = np.argmax([each.__code__.co_argcount for each in logps])
 
-        try:
-            super().__init__(logps[logp_index], start, **kwargs)
-        except TypeError:
-            super(Chain, self).__init__(logps[logp_index], start, **kwargs)
+        super(Chain, self).__init__(logps[logp_index], start, **kwargs)
 
         self.steps = steps
-
 
     def step(self):
 

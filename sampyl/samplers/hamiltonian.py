@@ -8,10 +8,35 @@ from .base import Sampler
 class Hamiltonian(Sampler):
     def __init__(self, logp, start, step_size=1, n_steps=5, **kwargs):
 
-        try:
-            super().__init__(logp, start, **kwargs)
-        except TypeError:
-            super(Hamiltonian, self).__init__(logp, start, **kwargs)
+        """ Hamiltonian MCMC sampler. Uses the gradient of log P(theta) to
+            make informed proposals.
+
+            Arguments
+            ----------
+            logp: function
+                Function which calculates log P(theta)
+            start: dict
+                Dictionary of starting state for the sampler. Should have one
+                element for each argument of logp. So, if logp = f(x, y), then
+                start = {'x': x_start, 'y': y_start}
+
+            Keyword Arguments
+            -----------------
+            grad_logp: function or list of functions
+                Functions that calculate grad log P(theta). Pass functions
+                here if you don't want to use autograd for the gradients. If
+                logp has multiple parameters, grad_logp must be a list of
+                gradient functions w.r.t. each parameter in logp.
+            scale: dict
+                Same format as start. Scaling for initial momentum in 
+                Hamiltonian step.
+            step_size: float
+                Step size for the deterministic proposals.
+            n_steps: int 
+                Number of deterministic steps to take for each proposal.
+            """
+
+        super(Hamiltonian, self).__init__(logp, start, **kwargs)
 
         self.step_size = step_size / (np.hstack(self.state.values()).size)**(1/4)
         self.n_steps = n_steps

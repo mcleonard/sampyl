@@ -7,18 +7,58 @@ from .hamiltonian import leapfrog, energy, initial_momentum
 
 class NUTS(Sampler):
     def __init__(self, logp, start,
-                 step_size     = 0.25,
-                 adapt_steps   = 100,
-                 Emax          = 1000.,
-                 target_accept = 0.65,
-                 gamma         = 0.05,
-                 k             = 0.75,
-                 t0            = 10.,
+                 step_size=0.25,
+                 adapt_steps=100,
+                 Emax=1000.,
+                 target_accept=0.65,
+                 gamma=0.05,
+                 k=0.75,
+                 t0=10.,
                  **kwargs):
-        try:
-            super().__init__(logp, start, **kwargs)
-        except TypeError:
-            super(NUTS, self).__init__(logp, start, **kwargs)
+
+        """ No-U-Turn sampler (Hoffman & Gelman, 2014) for sampling from a
+            probability distribution defined by a log P(theta) function.
+
+            For technical details, see the paper:
+            http://www.stat.columbia.edu/~gelman/research/published/nuts.pdf
+
+            Arguments
+            ----------
+            logp: function
+                Function which calculates log P(theta)
+            start: dict
+                Dictionary of starting state for the sampler. Should have one
+                element for each argument of logp. So, if logp = f(x, y), then
+                start = {'x': x_start, 'y': y_start}
+
+            Keyword Arguments
+            -----------------
+            grad_logp: function or list of functions
+                Functions that calculate grad log P(theta). Pass functions
+                here if you don't want to use autograd for the gradients. If
+                logp has multiple parameters, grad_logp must be a list of
+                gradient functions w.r.t. each parameter in logp.
+            scale: dict
+                Same format as start. Scaling for initial momentum in 
+                Hamiltonian step.
+            step_size: float
+                Initial step size for the deterministic proposals.
+            adapt_steps: int
+                Number of steps used for adapting the step size to achieve a
+                target acceptance rate
+            Emax: float
+                Maximum energy
+            target_accept: float
+                Target acceptance rate
+            gamma: float
+            k: float
+                Scales the speed of adaptation
+            t0: float
+                Slows initial adaptation
+
+        """
+        
+        super(NUTS, self).__init__(logp, start, **kwargs)
 
         self.step_size = step_size / len(self.state.tovector())**(1/4.)
         self.adapt_steps = adapt_steps

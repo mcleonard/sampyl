@@ -14,24 +14,24 @@ class Metropolis(Sampler):
 
             Has automatic scaling such that acceptance rate stays around 50%
 
-            Parameters
+            Arguments
             ----------
-
             logp: function
                 log P(X) function for sampling distribution
             start: scalar or 1D array-like
                 starting state for sampler
+
+            Keyword Arguments
+            -----------------
             scale: scalar or 1D array-like
                 initial scaling factor for proposal distribution
             tune_interval: int
                 number of samples between tunings of scale factor
 
         """
-        try:
-            super().__init__(logp, start, None, grad_logp_flag=False, **kwargs)
-        except TypeError:
-            super(Metropolis, self).__init__(logp, start, None, grad_logp_flag=False,
-                                             **kwargs)
+        
+        super(Metropolis, self).__init__(logp, start, None, grad_logp_flag=False,
+                                         **kwargs)
         self.tune_interval = tune_interval
         self._steps_until_tune = tune_interval
         self._accepted = 0

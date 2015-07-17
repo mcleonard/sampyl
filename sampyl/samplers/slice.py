@@ -26,13 +26,15 @@ class Slice(Sampler):
             Andrew Miller (acm@seas.harvard.edu) 7-13-15
             Adapted from an code written by Ryan Adams (rpa@seas.harvard.edu)
 
-            Parameters
+            Arguments
             ----------
-
             logp: function
                 log P(X) function for sampling distribution
             start: scalar or 1D array-like
                 starting state for sampler
+
+            Keyword Arguments
+            -----------------
             compwise: boolean
                 component-wise univariate slice sample (or random direction)
             width: scalar
@@ -43,13 +45,11 @@ class Slice(Sampler):
                 if stepping out, double slice width?
             max_steps_out: scalar
                 max number of steps out to perform
-            verbose: 
+            verbose:
                 print steps out
         """
-        try:
-            super().__init__(logp, start, None, grad_logp_flag=False, **kwargs)
-        except TypeError:
-            super(Slice, self).__init__(logp, start, None, grad_logp_flag=False,
+        
+        super(Slice, self).__init__(logp, start, None, grad_logp_flag=False,
                                              **kwargs)
         self._num_evals = 0
 

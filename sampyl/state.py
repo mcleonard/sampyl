@@ -5,8 +5,12 @@ from collections import OrderedDict
 
 
 class State(OrderedDict):
+    """ State object for storing parameter values.
+        Inherits from OrderedDict.
+    """
 
     def tovector(self):
+        """ Return the parameter values as a flat vector. """
         return np.hstack(self.values())
 
     def fromvector(self, vec):
@@ -29,6 +33,7 @@ class State(OrderedDict):
 
     @staticmethod
     def fromfunc(func):
+        """ Initialize a State from the arguments of a function """
         var_names = func_var_names(func)
         return State.fromkeys(var_names)
 
