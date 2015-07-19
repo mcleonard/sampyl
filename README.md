@@ -20,27 +20,19 @@ It is still under active development with more features coming soon!
 
 Works for Python 2 or 3.
 
-Currently, [numpy](http://www.numpy.org/) is the only dependency. To use the automatic gradient log-P capabilities, you will need to install [autograd](https://github.com/HIPS/autograd).
+Currently, [numpy](http://www.numpy.org/) and [scipy](http://www.scipy.org/) are the only dependencies. To use the automatic gradient log-P capabilities, you will need to install [autograd](https://github.com/HIPS/autograd).
+
 
 ### Installation
 Since this is a very alpha stage package, I'm not willing to put it up on PyPI yet. For now you can install it with pip like so:
 
 `pip install git+https://github.com/mcleonard/sampyl`
 
-### Documentation
-
-Basically none exist right now, will work on that soon. Check out the [example notebook](http://nbviewer.ipython.org/github/mcleonard/sampyl/blob/master/Examples.ipynb) though for some guidance.
-
-
-## Installation
-
-Not on PyPI yet, but you can install it like so:
-
-`pip install git+https://github.com/mcleonard/sampyl.git`
 
 ### Documentation
 
 Basically none exist right now, will work on that soon. Check out the [example notebook](http://nbviewer.ipython.org/github/mcleonard/sampyl/blob/master/Examples.ipynb) though for some guidance.
+
 
 ### Tests
 
