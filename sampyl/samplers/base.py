@@ -88,6 +88,9 @@ class Sampler(object):
                 Number of samples to burn through
             thin: thin
                 Thin the samples by this factor
+            n_chains: int
+                Number of chains to return. Each chain is given its own
+                process and the OS decides how to distribute the processes.
             progress_bar: boolean
                 Show the progress bar, default = True
         """
