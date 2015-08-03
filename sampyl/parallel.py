@@ -10,32 +10,32 @@ from .state import State
 from .progressbar import update_progress
 
 
-def f(n_samples, sampler, **kwargs):
-        kwargs.update({'progress_bar': False})
-        trace = sampler.sample(n_samples, **kwargs)
+def f(n_samples, sampler):
+        trace = sampler.sample(n_samples, progress_bar=False)
         return trace
 
 
-def parallel(sampler, n_chains, n_samples, progress_bar=True, **kwargs):
+def parallel(sampler, n_chains, samples, progress_bar=True, **kwargs):
 
     samplers = init_samplers(sampler, n_chains)
-
+    chains = [copy.copy(samples) for _ in range(n_chains)]
+    
+    n_samples = len(samples)
     batches = [n_samples//10]*10
     batches.append(n_samples%10)
 
     pool = Pool(processes=n_chains)
-    chains = None
     for i, N in enumerate(batches):
-        func = partial(f, N, **kwargs)
-        if chains is None:
-            chains = pool.map(func, samplers)
-        else:
+        func = partial(f, N)
+        if i != 0:
             # Reinitialize samplers where the previous batch left off so that
             # the new batch starts at the correct state
-            samplers = init_samplers(sampler, n_chains, chains=chains)
-            new_chains = pool.map(func, samplers)
-            chains = [stack_arrays([new, old], usemask=False, asrecarray=True)
-                      for new, old in zip(new_chains, chains)]
+            samplers = init_samplers(sampler, n_chains, chains=new_chains)
+        new_chains = pool.map(func, samplers)
+        
+        for new, old in zip(new_chains, chains):
+            for j in range(N):
+                old[i*N + j] = new[j]
 
         if progress_bar:
                 update_progress(N*(i+1), n_samples)
@@ -43,6 +43,8 @@ def parallel(sampler, n_chains, n_samples, progress_bar=True, **kwargs):
     if progress_bar:
         update_progress(n_samples, n_samples, end=True)
 
+    burn, thin = kwargs.get('burn'), kwargs.get('thin')
+    chains = [chain[burn+1::thin] for chain in chains]
     return chains
 
 

@@ -8,7 +8,21 @@ np_source = np.__package__
 
 n_samples = 100
 
-def test_parallel():
+
+def test_parallel_lin_model():
+
+    logp = linear_model_logp
+    start = {'b':np.zeros(5), 'sig': 1.}
+    metro = smp.Metropolis(logp, start)
+    nuts = smp.NUTS(logp, start)
+
+    metro_chain = metro.sample(n_samples, n_chains=4)
+    nuts_chain = nuts.sample(n_samples, n_chains=4)
+
+    assert(len(metro_chain) == 4)
+    assert(len(nuts_chain) == 4)
+
+def test_parallel_2D():
 
     start = {'lam1': 1., 'lam2': 1.}
     metro = smp.Metropolis(poisson_logp, start)

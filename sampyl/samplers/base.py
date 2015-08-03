@@ -100,16 +100,16 @@ class Sampler(object):
         if self._grad_logp_flag and self.grad_logp is None:
             self.grad_logp = auto_grad_logp(self.logp)
 
+        dtypes = [(var, 'f8', np.shape(self.state[var])) for var in self.state]
+        samples = np.zeros(num, dtype=dtypes).view(np.recarray)
         if n_chains != 1:
-            return parallel(self, n_chains, num, 
+            return parallel(self, n_chains, samples, 
                             burn=burn, thin=thin, 
                             progress_bar=progress_bar)
-
         if self.sampler is None:
             self.sampler = (self.step() for _ in count(start=0, step=1))
 
-        dtypes = [(var, 'f8', np.shape(self.state[var])) for var in self.state]
-        samples = np.zeros(num, dtype=dtypes).view(np.recarray)
+        
         start_time = time.time()
         for i in range(num):
             samples[i] = next(self.sampler).tovector()
