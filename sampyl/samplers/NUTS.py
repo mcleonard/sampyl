@@ -1,8 +1,10 @@
 from __future__ import division
 
+import collections
+
 from ..core import np
 from .base import Sampler
-from .hamiltonian import leapfrog, energy, initial_momentum
+from .hamiltonian import energy, leapfrog, initial_momentum
 
 
 class NUTS(Sampler):
@@ -57,7 +59,7 @@ class NUTS(Sampler):
                 Slows initial adaptation
 
         """
-        
+
         super(NUTS, self).__init__(logp, start, **kwargs)
 
         self.step_size = step_size / len(self.state.tovector())**(1/4.)
@@ -74,8 +76,8 @@ class NUTS(Sampler):
 
     def step(self):
 
-        H = self.logp
-        dH = self.grad_logp
+        H = self.model.logp
+        dH = self.model.grad
         x = self.state
         r0 = initial_momentum(x, self.scale)
         u = np.random.uniform()

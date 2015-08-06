@@ -88,7 +88,7 @@ class Slice(Sampler):
         def dir_logprob(z):
             self._num_evals += 1
             cstate = State.init_fromvector(direction*z + init_x, self.state)
-            return self.logp(*cstate.values())
+            return self.model.logp(cstate)
 
         def acceptable(z, llh_s, L, U):
             while (U-L) > 1.1*self.width:

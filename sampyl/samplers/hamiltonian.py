@@ -3,6 +3,7 @@ from __future__ import division
 from ..core import np
 from ..state import State
 from .base import Sampler
+from ..model import Model
 
 
 class Hamiltonian(Sampler):
@@ -28,7 +29,7 @@ class Hamiltonian(Sampler):
                 logp has multiple parameters, grad_logp must be a list of
                 gradient functions w.r.t. each parameter in logp.
             scale: dict
-                Same format as start. Scaling for initial momentum in 
+                Same format as start. Scaling for initial momentum in
                 Hamiltonian step.
             step_size: float
                 Step size for the deterministic proposals.
@@ -48,9 +49,9 @@ class Hamiltonian(Sampler):
         y, r = x, r0
 
         for i in range(self.n_steps):
-            y, r = leapfrog(y, r, self.step_size, self.grad_logp)
+            y, r = leapfrog(y, r, self.step_size, self.model.grad)
 
-        if accept(x, y, r0, r, self.logp):
+        if accept(x, y, r0, r, self.model.logp):
             x = y
             self._accepted += 1
 
@@ -63,21 +64,11 @@ class Hamiltonian(Sampler):
         return self._accepted/self._sampled
 
 
-def grad_vec(grad_logp, state):
-    """ grad_logp should be a list of gradient logps, respective to each
-        parameter in x
-    """
-    if hasattr(grad_logp, '__call__'):
-        return np.array([grad_logp(*state.values())])
-    else:
-        return np.array([grad_logp[each](*state.values()) for each in state])
-
-
-def leapfrog(x, r, step_size, grad_logp):
-    r_new = r + step_size/2*grad_vec(grad_logp, x)
-    x_new = x + step_size*r_new
-    r_new = r_new + step_size/2*grad_vec(grad_logp, x_new)
-    return x_new, r_new
+def leapfrog(x, r, step_size, grad):
+    r1 = r + step_size/2*grad(x)
+    x1 = x + step_size*r1
+    r2 = r1 + step_size/2*grad(x1)
+    return x1, r2
 
 
 def accept(x, y, r_0, r, logp):
@@ -89,7 +80,7 @@ def accept(x, y, r_0, r, logp):
 
 def energy(logp, x, r):
     r1 = r.tovector()
-    return logp(*x.values()) - 0.5*np.dot(r1, r1)
+    return logp(x) - 0.5*np.dot(r1, r1)
 
 
 def initial_momentum(state, scale):
@@ -103,10 +94,4 @@ def initial_momentum(state, scale):
             # If the var is a single float
             new.update({var: np.random.normal(0, scale[var])})
 
-    
-    # for i, var in enumerate(state):
-    #     mu = np.zeros(np.shape(state[var]))
-    #     r.update({var: np.random.normal(mu, scale[i])})
-    # return r
-    
     return new

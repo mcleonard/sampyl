@@ -21,6 +21,9 @@ class State(OrderedDict):
             i += var_sizes[var]
         return self
 
+    def freeze(self):
+        return tuple(self.tovector())
+
     @staticmethod
     def init_fromvector(vec, state):
         vals = []

@@ -4,10 +4,19 @@ from .logps import *
 import sampyl as smp
 import pytest
 
+#TODO: Make tests to check correctness of samplers
+
 np_source = np.__package__
 
 n_samples = 100
 
+def test_logp_with_grad():
+    logp = poisson_with_grad
+    start = {'lam1':1., 'lam2': 1.}
+    nuts = smp.NUTS(logp, start, grad_logp=True)
+    chain = nuts.sample(n_samples)
+
+    assert(len(chain)==n_samples)
 
 def test_parallel_lin_model():
 
@@ -16,11 +25,12 @@ def test_parallel_lin_model():
     metro = smp.Metropolis(logp, start)
     nuts = smp.NUTS(logp, start)
 
-    metro_chain = metro.sample(n_samples, n_chains=4)
-    nuts_chain = nuts.sample(n_samples, n_chains=4)
+    metro_chains = metro.sample(n_samples, n_chains=2)
+    nuts_chains = nuts.sample(n_samples, n_chains=2)
 
-    assert(len(metro_chain) == 4)
-    assert(len(nuts_chain) == 4)
+    assert(len(metro_chains) == 2)
+    assert(len(nuts_chains) == 2)
+
 
 def test_parallel_2D():
 
@@ -28,11 +38,12 @@ def test_parallel_2D():
     metro = smp.Metropolis(poisson_logp, start)
     nuts = smp.NUTS(poisson_logp, start)
 
-    metro_chain = metro.sample(n_samples, n_chains=4)
-    nuts_chain = nuts.sample(n_samples, n_chains=4)
+    metro_chains = metro.sample(n_samples, n_chains=2)
+    nuts_chains = nuts.sample(n_samples, n_chains=2)
 
-    assert(len(metro_chain) == 4)
-    assert(len(nuts_chain) == 4)
+    assert(len(metro_chains) == 2)
+    assert(len(nuts_chains) == 2)
+
 
 def test_sample_chain():
     start = {'lam1': 1., 'lam2': 1.}

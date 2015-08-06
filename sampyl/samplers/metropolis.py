@@ -40,7 +40,7 @@ class Metropolis(Sampler):
         """ Perform a Metropolis-Hastings step. """
         x = self.state
         y = proposal(x, scale=self.scale)
-        if accept(x, y, self.logp):
+        if accept(x, y, self.model.logp):
             self.state = y
             self._accepted += 1
 
@@ -73,7 +73,7 @@ def accept(x, y, logp):
     """ Return a boolean indicating if the proposed sample should be accepted,
         given the logp ratio logp(y)/logp(x).
     """
-    delp = logp(*y.values()) - logp(*x.values())
+    delp = logp(y) - logp(x)
     if np.isfinite(delp) and np.log(np.random.uniform()) < delp:
         return True
     else:

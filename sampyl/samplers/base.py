@@ -1,11 +1,11 @@
 from itertools import count
 import time
 
-from ..core import np, auto_grad_logp
+from ..core import np, auto_grad_logp, AUTOGRAD
 from ..parallel import parallel
 from ..progressbar import update_progress
 from ..state import State, func_var_names
-
+from ..model import init_model
 
 class Sampler(object):
     def __init__(self, logp, start,
@@ -14,9 +14,14 @@ class Sampler(object):
                  condition=None,
                  grad_logp_flag=True,
                  random_seed=None):
-        self.logp = check_logp(logp)
+
+        self.model = init_model(logp, grad_logp, grad_logp_flag)
+
+        self._logp_func = logp
+        self._grad_func = grad_logp
         self.var_names = func_var_names(logp)
-        self.state = State.fromfunc(logp)
+
+        self.state = State.fromkeys(self.var_names)
         self.state.update(start)
 
         self.scale = default_scale(scale, self.state)
@@ -27,17 +32,11 @@ class Sampler(object):
         self._grad_logp_flag = grad_logp_flag
         self.seed = random_seed
 
-        if self._grad_logp_flag and grad_logp is None:
-            self.grad_logp = auto_grad_logp(logp)
-        elif self._grad_logp_flag:
-            if len(self.var_names) > 1 and len(grad_logp) != len(var_names):
-                raise TypeError("grad_logp must be iterable with length equal"
-                                " to the number of parameters in logp.")
-            else:
-                self.grad_logp = grad_logp
+        if random_seed:
+            np.random.seed(random_seed)
 
         if condition is not None:
-            self.joint_logp = self.logp
+            self._joint_logp = self._logp_func
 
     def _conditional_step(self):
         """ Build a conditional logp and sample from it. """
@@ -53,12 +52,14 @@ class Sampler(object):
             # Insert conditional values here, then pass to full logp
             for i in frozen_vars:
                 conditional_state.update({i: frozen_state[i]})
-            return self.joint_logp(**conditional_state)
+            return self._joint_logp(**conditional_state)
 
+        print(free_vars)
         self.state = State([(var, frozen_state[var]) for var in free_vars])
-        self.logp = conditional_logp
-        if self._grad_logp_flag:
-            self.grad_logp = auto_grad_logp(conditional_logp, names=self.state.keys())
+        self._logp_func = conditional_logp
+        if self._grad_logp_flag and AUTOGRAD:
+            self.model.grad_func = auto_grad_logp(conditional_logp, names=self.state.keys())
+        self.model.logp_func = self._logp_func
         state = self.step()
 
         # Add the frozen variables back into the state
@@ -97,8 +98,9 @@ class Sampler(object):
         if self.seed is not None:
             np.random.seed(self.seed)
 
-        if self._grad_logp_flag and self.grad_logp is None:
-            self.grad_logp = auto_grad_logp(self.logp)
+        if AUTOGRAD and hasattr(self.model, 'grad_func') \
+                    and self.model.grad_func is None:
+            self.model.grad_func = auto_grad_logp(self._logp_func)
 
         # Constructing a recarray to store samples
         dtypes = [(var, 'f8', np.shape(self.state[var])) for var in self.state]
@@ -112,7 +114,7 @@ class Sampler(object):
         if self.sampler is None:
             self.sampler = (self.step() for _ in count(start=0, step=1))
 
-        start_time = time.time()
+        start_time = time.time() # For progress bar
         for i in range(num):
             samples[i] = next(self.sampler).tovector()
 
@@ -123,16 +125,9 @@ class Sampler(object):
         if progress_bar:
             update_progress(i+1, num, end=True)
 
+        self.model.clear_cache()
+
         return samples[burn+1::thin]
-
-
-def check_logp(logp):
-    if not hasattr(logp, '__call__'):
-        raise TypeError("logp must be a function")
-    elif logp.__code__.co_argcount == 0:
-        raise ValueError("logp must have arguments")
-    else:
-        return logp
 
 
 def default_scale(scale, state):

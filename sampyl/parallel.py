@@ -1,8 +1,10 @@
+from __future__ import division
+
 import copy
 from functools import partial
 from multiprocessing import Pool
 
-from .core import np
+from .core import np, AUTOGRAD
 from .samplers import *
 from .state import State
 from .progressbar import update_progress
@@ -53,13 +55,14 @@ def init_samplers(sampler, n_chains, chains=None):
     samplers = [copy.deepcopy(sampler) for _ in range(n_chains)]
     for sampler in samplers:
         # Randomize start and seed
-        sampler.state.update({var: val + np.random.randn(*np.shape(val))
+        sampler.state.update({var: val + np.random.randn(*np.shape(val))*val/5
                               for var, val in sampler.state.items()})
         sampler.seed = np.random.randint(0, 2**16)
 
         # Can't pickle autograd grad functions, so clear it here, then
         # build them when sample method is called.
-        sampler.grad_logp = None
+        if AUTOGRAD and hasattr(sampler.model, 'grad_func'):
+            sampler.model.grad_func = None
 
     if chains is not None:
         # This way we can update the samplers' states to the last state
