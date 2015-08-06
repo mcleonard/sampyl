@@ -40,6 +40,9 @@ class NUTS(Sampler):
                 here if you don't want to use autograd for the gradients. If
                 logp has multiple parameters, grad_logp must be a list of
                 gradient functions w.r.t. each parameter in logp.
+
+                If you wish to use a logp function that returns both the logp
+                value and the gradient, set grad_logp = True.
             scale: dict
                 Same format as start. Scaling for initial momentum in 
                 Hamiltonian step.

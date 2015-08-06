@@ -124,7 +124,8 @@ class Sampler(object):
         if progress_bar:
             update_progress(i+1, num, end=True)
 
-        #self.model.clear_cache()
+        # Clearing the cache after a run to save on memory.
+        self.model.clear_cache()
 
         return samples[burn+1::thin]
 

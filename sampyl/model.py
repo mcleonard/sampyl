@@ -22,6 +22,8 @@ class BaseModel(object):
         return self.logp(state), self.grad(state)
 
     def clear_cache(self):
+        del self._logp_cache
+        del self._grad_cache
         self._logp_cache = {}
         self._grad_cache = {}
 
