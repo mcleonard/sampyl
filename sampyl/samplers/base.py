@@ -54,7 +54,6 @@ class Sampler(object):
                 conditional_state.update({i: frozen_state[i]})
             return self._joint_logp(**conditional_state)
 
-        print(free_vars)
         self.state = State([(var, frozen_state[var]) for var in free_vars])
         self._logp_func = conditional_logp
         if self._grad_logp_flag and AUTOGRAD:
@@ -125,7 +124,7 @@ class Sampler(object):
         if progress_bar:
             update_progress(i+1, num, end=True)
 
-        self.model.clear_cache()
+        #self.model.clear_cache()
 
         return samples[burn+1::thin]
 

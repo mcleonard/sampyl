@@ -1,10 +1,10 @@
 from __future__ import division
 
 from .core import np
-from collections import OrderedDict
+import collections
 
 
-class State(OrderedDict):
+class State(collections.OrderedDict):
     """ State object for storing parameter values.
         Inherits from OrderedDict.
     """
@@ -44,32 +44,94 @@ class State(OrderedDict):
         return State([(var, np.size(self[var])) for var in self])
 
     def __add__(self, other):
-
-        return special_math_func(self, other, '__add__')
+        if isinstance(other, int) or isinstance(other, float):
+            return handle_number(self, other, '__add__')
+        elif isinstance(other, collections.Iterable):
+            return handle_iterable(self, other, '__add__')
+        else:
+            raise TypeError("Addition not supported for State and {}".format(other))
 
     def __sub__(self, other):
-        return special_math_func(self, other, '__sub__')
+        if isinstance(other, int) or isinstance(other, float):
+            return handle_number(self, other, '__sub__')
+        elif isinstance(other, collections.Iterable):
+            return handle_iterable(self, other, '__sub__')
+        else:
+            raise TypeError("Subtraction not supported for State and {}".format(other))
 
     def __mul__(self, other):
-        return special_math_func(self, other, '__mul__')
+        if isinstance(other, int) or isinstance(other, float):
+            return handle_number(self, other, '__mul__')
+        else:
+            raise TypeError("Multiplication not supported for State and {}".format(other))
 
     def __truediv__(self, other):
-        return special_math_func(self, other, '__truediv__')
+        if isinstance(other, int) or isinstance(other, float):
+            return handle_number(self, other, '__truediv__')
+        else:
+            raise TypeError("Division not supported for State and {}".format(other))
 
     def __radd__(self, other):
-        # Commutative, so nothing changes
-        return self.__add__(other)
+        if isinstance(other, int) or isinstance(other, float):
+            # Commutative, so nothing changes
+            return self + other
+        else:
+            raise TypeError("Can only broadcast from the left.")
 
     def __rmul__(self, other):
-        # Commutative, so nothing changes
-        return self.__mul__(other)
+        if isinstance(other, int) or isinstance(other, float):
+            # Commutative, so nothing changes
+            return self * other
+        else:
+            raise TypeError("Can only broadcast from the left.")
 
     def __rsub__(self, other):
-        return special_math_func(self, other, '__rsub__')
+        if isinstance(other, int) or isinstance(other, float):
+            return handle_number(self, other, '__rsub__')
+        elif isinstance(other, collections.Iterable):
+            return handle_iterable(self, other, '__rsub__')
+        else:
+            raise TypeError("Subtraction not supported for State and {}".format(other))
 
     def __rtruediv__(self, other):
-        return special_math_func(self, other, '__rtruediv__')
+        if isinstance(other, int) or isinstance(other, float):
+            return handle_number(self, other, '__truediv__')
+        else:
+            raise TypeError("Division not supported for State and {}".format(other))
 
+
+def handle_number(state, other, operator):
+    vals = [getattr(state[var], operator)(other) for var in state]
+    try:
+        if NotImplemented in vals:
+            vals = [getattr(other, operator)(state[var]) for var in state]
+    except ValueError:
+        pass
+    return State([(var, val) for var, val in zip(state, vals)])
+
+
+def handle_iterable(state, other, operator):
+    if len(other) != len(state):
+        # This might be the case:
+        #        State({'x': np.array(1, 2, 3)}) + np.array([2,3,4])
+        # So check if both are numpy arrays, then add
+        # But first, we can only do this is len(state) is 1.
+        if len(state) != 1:
+            raise ValueError("Can't broadcast with sizes state: {},"
+                             " other: {}".format(len(state), len(other)))
+        var = list(state.keys())[0]
+        val = state[var]
+        if type(val) == np.ndarray and type(other) == np.ndarray:
+            return State([(var, getattr(val, operator)(other))])
+        else:
+            raise ValueError("Can only operate on numpy arrays.")
+    if isinstance(other, dict):
+        vals = [getattr(state[var], operator)(other[var]) for var in state]
+    else:
+        # Otherwise, we have cases like
+        # State({'x': foo, 'y': bar}) + [foo2, bar2]
+        vals = [getattr(state[var], operator)(each) for var, each in zip(state, other)]
+    return State([(var, val) for var, val in zip(state, vals)])
 
 def special_math_func(state, other, operator):
     """ A function for special math functions used in the State class.
@@ -77,21 +139,9 @@ def special_math_func(state, other, operator):
         state1 + state2, etc. basically we want to do the same thing
         every time but with different operators.
     """
-    if not hasattr(other, '__iter__'):
-        # other is just a number
-        results = [getattr(state[each], operator)(other)
-                   for each in state.keys()]
-    else:
-        try:
-            # Both are dictionaries
-            results = [getattr(state[each], operator)(other[each])
-                       for each in state]
-        except IndexError:
-            # Both are iterables, but other is not a dictionary
-            results = [getattr(state[i], operator)(j)
-                       for i, j in zip(state, other)]
-    out = State(zip(state.keys(), results))
-    return out
+    new = State([(var, vals) for var, each in zip(state, vals)])
+
+    return new
 
 
 def func_var_names(func):
