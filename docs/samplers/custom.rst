@@ -72,3 +72,9 @@ As an example, here's snippet from the :ref:`Metropolis <metropolis>` sampler. :
 
 
 
+Custom Samplers
+===============
+
+.. module:: sampyl
+
+.. autoclass:: Sampler

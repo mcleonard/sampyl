@@ -1,3 +1,5 @@
+.. _hamiltonian:
+
 Hamiltonian MCMC Sampler
 ========================
 
