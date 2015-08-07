@@ -7,29 +7,34 @@ from .base import Sampler
 
 class Metropolis(Sampler):
     # TODO: Allow for sticking in different proposal distributions.
+    """ Metropolis-Hastings sampler for drawing from a distribution
+        defined by a logp function.
+
+        Has automatic scaling such that acceptance rate stays around 50%
+
+        :param logp: function
+            log P(X) function for sampling distribution.
+        :param start: 
+            Dictionary of starting state for the sampler. Should have one
+            element for each argument of logp.
+        :param scale: **scalar or 1D array-like.**
+            initial scaling factor for proposal distribution.
+        :param tune_interval: **int.**
+            number of samples between tunings of scale factor.
+
+        Example::
+
+            def logp(x, y):
+                ...
+
+            start = {'x': x_start, 'y': y_start}
+            metro = sampyl.Metropolis(logp, start)
+            chain = metro.sample(20000, burn=5000, thin=4)
+
+    """
 
     def __init__(self, logp, start, tune_interval=100, **kwargs):
-        """ Metropolis-Hastings sampler for drawing from a distribution
-            defined by a logp function.
-
-            Has automatic scaling such that acceptance rate stays around 50%
-
-            Arguments
-            ----------
-            logp: function
-                log P(X) function for sampling distribution
-            start: scalar or 1D array-like
-                starting state for sampler
-
-            Keyword Arguments
-            -----------------
-            scale: scalar or 1D array-like
-                initial scaling factor for proposal distribution
-            tune_interval: int
-                number of samples between tunings of scale factor
-
-        """
-        
+                
         super(Metropolis, self).__init__(logp, start, None, grad_logp_flag=False,
                                          **kwargs)
         self.tune_interval = tune_interval

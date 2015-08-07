@@ -76,23 +76,23 @@ class Sampler(object):
         """ This is what you define to create the sampler. """
         pass
 
+
     def sample(self, num, burn=0, thin=1, n_chains=1, progress_bar=True):
-        """ Sample from distribution defined by logp.
+        """ Sample from P(X)
 
-            Parameters
-            ----------
-
-            num: int
-                Number of samples to return.
-            burn: int
-                Number of samples to burn through
-            thin: thin
-                Thin the samples by this factor
-            n_chains: int
+            :param num: **int.** Number of samples to return.
+            :param burn: (optional) **int.**
+                Number of samples to discard from the beginning of the chain.
+            :param thin: (optional) **float.**
+                Thin the samples by this factor.
+            :param n_chains: (optional) **int.**
                 Number of chains to return. Each chain is given its own
                 process and the OS decides how to distribute the processes.
-            progress_bar: boolean
-                Show the progress bar, default = True
+            :param progress_bar: (optional) **boolean.**
+                Show the progress bar, default = True.
+            :return: Record array with fields taken from arguments of 
+                logp function.
+
         """
         if self.seed is not None:
             np.random.seed(self.seed)
