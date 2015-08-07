@@ -23,6 +23,8 @@ in Python, written in C/C++ and wrapped with Python, or anything else a user can
 think of. For samplers that require the gradient of P(X), such as :ref:`NUTS <nuts>`, 
 Sampyl can calculate the gradients automatically with autograd_. 
 
+.. _autograd: https://github.com/HIPS/autograd/
+
 To show you how simple this can be, let's sample from a 2D correlated normal distribution. ::
     
     # To use automatic gradient calculations, use numpy (np) provided 
@@ -46,16 +48,16 @@ To show you how simple this can be, let's sample from a 2D correlated normal dis
 	:align: center
 
 
-.. _autograd: https://github.com/HIPS/autograd/
 
 Start here
 ----------
+
+
 .. toctree::
    :maxdepth: 2
 
    introduction
    tutorial
-
 
 Examples
 --------
@@ -70,6 +72,18 @@ API
     model
     samplers
     state
+
+Samplers
+--------
+
+.. toctree::
+	:maxdepth: 1
+
+	samplers/nuts
+	samplers/metropolis
+	samplers/slice
+	samplers/hamiltonian
+	samplers/custom
 
 
 Indices and tables

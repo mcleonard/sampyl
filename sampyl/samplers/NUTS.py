@@ -52,7 +52,7 @@ class NUTS(Sampler):
             adaptation.
         :param t0: (optional) *float.* Slows initial step size adaptation.
 
-        Example::
+        Example ::
 
             def logp(x, y):
                 ...

@@ -20,6 +20,9 @@ class Metropolis(Sampler):
         :param scale: *scalar or 1D array-like.*
             initial scaling factor for proposal distribution.
         :param tune_interval: *int.*
+        :param scale: **scalar or 1D array-like.**
+            initial scaling factor for proposal distribution.
+        :param tune_interval: **int.**
             number of samples between tunings of scale factor.
 
         Example::
