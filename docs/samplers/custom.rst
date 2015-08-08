@@ -10,6 +10,7 @@ a :ref:`state` generated from `start` and the arguments of `logp`.
 As an example, here's snippet from the :ref:`Metropolis <metropolis>` sampler. ::
 
     from sampyl import Sampler
+    from sampyl import np
     
     class Metropolis(Sampler):
 
