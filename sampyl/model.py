@@ -3,25 +3,29 @@
 
 import collections
 
-from .core import auto_grad_logp, np
-from .state import func_var_names
+from sampyl.core import auto_grad_logp, np
+from sampyl.state import func_var_names
 
 
 class BaseModel(object):
+    """ Base model for subclassing. """
     def __init__(self):
         self._logp_cache = {}
         self._grad_cache = {}
 
     def logp(self, state):
+        """ Return log P(X) given a :ref:`state <state>` X"""
         pass
 
     def grad(self, state):
         pass
 
     def __call__(self, state):
+        """ Return log P(X) and grad log P(X) given a :ref:`state <state>` X"""
         return self.logp(state), self.grad(state)
 
     def clear_cache(self):
+        """ Clear caches. """
         del self._logp_cache
         del self._grad_cache
         self._logp_cache = {}
@@ -30,13 +34,17 @@ class BaseModel(object):
 
 class SingleModel(BaseModel):
     """ A model for a logp function that returns both the cost function and
-        the gradient. Caches values to improve performance. """
+        the gradient. Caches values to improve performance. 
+
+        :param logp_func: Function that returns log P(X) and its gradient. 
+    """
 
     def __init__(self, logp_func):
         super(SingleModel, self).__init__()
         self.logp_func = logp_func
 
     def logp(self, state):
+        """ Return log P(X) given a :ref:`state <state>` X"""
         frozen_state = state.freeze()
         if not isinstance(frozen_state, collections.Hashable):
             # uncacheable. a list, for instance.
@@ -54,6 +62,7 @@ class SingleModel(BaseModel):
         return logp_value
 
     def grad(self, state):
+        """ Return grad log P(X) given a :ref:`state <state>` X """
         # Freeze the state as a tuple so we can use it as a dictionary key
         frozen_state = state.freeze()
         if not isinstance(frozen_state, collections.Hashable):
@@ -73,13 +82,26 @@ class SingleModel(BaseModel):
 
 
 class Model(BaseModel):
-    """ A model for separate logp and grad_logp functions. """
+    """ A model for separate logp and grad_logp functions. 
+
+        :param logp: 
+            log P(X) function for sampling distribution.
+        :param grad_logp: (optional) *function or list of functions.*
+            Gradient log P(X) function. If left as None, then `grad_logp_flag`
+            is checked. If the flag is `True`, then the gradient will be 
+            automatically calculated with autograd.
+        :param grad_logp_flag: (optional) *boolean.*
+            Flag indicating if the gradient is needed or not.
+    
+
+    """
     def __init__(self, logp_func, grad_func=None, grad_logp_flag=False):
         super(Model, self).__init__()
         self.logp_func = check_logp(logp_func)
         self.grad_func = check_grad_logp(logp_func, grad_func, grad_logp_flag)
 
     def logp(self, state):
+        """ Return log P(X) given a :ref:`state <state>` X"""
         # Freeze the state as a tuple so we can use it as a dictionary key
         frozen_state = state.freeze()
         if not isinstance(frozen_state, collections.Hashable):
@@ -97,6 +119,7 @@ class Model(BaseModel):
         return logp_value
 
     def grad(self, state):
+        """ Return grad log P(X) given a :ref:`state <state>` X """
         # Freeze the state as a tuple so we can use it as a dictionary key
         frozen_state = state.freeze()
         if not isinstance(frozen_state, collections.Hashable):
@@ -115,6 +138,20 @@ class Model(BaseModel):
 
 
 def init_model(logp, grad_logp=None, grad_logp_flag=False):
+    """ Initialize a model and return it.
+
+        :param logp: 
+            log P(X) function for sampling distribution.
+        :param grad_logp: (optional) *function, list of functions, or boolean.*
+            Gradient log P(X) function. If left as None, then `grad_logp_flag`
+            is checked. If the flag is `True`, then the gradient will be 
+            automatically calculated with autograd.
+
+            If `grad_logp` is set to True, then a SingleModel is returned.
+        :param grad_logp_flag: (optional) *boolean.*
+            Flag indicating if the gradient is needed or not.
+    """
+
     if grad_logp is True:
         return SingleModel(logp)
     else:

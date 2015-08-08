@@ -12,8 +12,7 @@ samplers are implemented. However, we are working on providing an API for buildi
 Bayesian models.
 
 Sampyl allows the user to define a model any way they want, all that is required is
-a function that calculates log P(X). This function can be written completely in Python,
-or written in C/C++ and wrapped with Python. For samplers that require the gradient 
+a function that calculates log P(X). This function can be written completely in Python, written in C/C++ and wrapped with Python,  . For samplers that require the gradient 
 of P(X), NUTS for example, Sampyl can calculate the gradients automatically
 with autograd_.
 
@@ -21,7 +20,6 @@ with autograd_.
 
 Start here
 ----------
-
 .. toctree::
    :maxdepth: 2
 
@@ -29,19 +27,19 @@ Start here
    tutorial
 
 
-Samplers
+Examples
 --------
+Examples here.
 
+API
+---
 .. toctree::
-	:maxdepth: 1
+    :maxdepth: 1
 
-	samplers/nuts
-	samplers/metropolis
-	samplers/slice
-	samplers/hamiltonian
-	samplers/custom
-
-
+    distributions
+    model
+    samplers
+    state
 
 
 Indices and tables

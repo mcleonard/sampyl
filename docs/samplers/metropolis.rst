@@ -1,3 +1,5 @@
+.. _metropolis:
+
 Metropolis-Hastings Sampler
 ===========================
 

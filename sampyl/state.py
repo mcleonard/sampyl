@@ -1,12 +1,15 @@
 from __future__ import division
 
-from .core import np
+import sampyl
+from sampyl.core import np
 import collections
 
 
 class State(collections.OrderedDict):
     """ State object for storing parameter values.
+        
         Inherits from OrderedDict.
+
     """
 
     def tovector(self):
@@ -14,6 +17,10 @@ class State(collections.OrderedDict):
         return np.hstack(self.values())
 
     def fromvector(self, vec):
+        """ Update the state using a numpy array. 
+
+            :param vec: np.array for updating the state.
+        """
         var_sizes = self.size()
         i = 0
         for var in self:
@@ -22,10 +29,12 @@ class State(collections.OrderedDict):
         return self
 
     def freeze(self):
+        """ Return a immutable tuple of the state values."""
         return tuple(self.tovector())
 
     @staticmethod
     def init_fromvector(vec, state):
+        ""
         vals = []
         var_sizes = state.size()
         i = 0

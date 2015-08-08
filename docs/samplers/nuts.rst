@@ -1,3 +1,5 @@
+.. _nuts:
+
 No-U-Turn Sampler (NUTS)
 ========================
 

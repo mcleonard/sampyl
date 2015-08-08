@@ -17,9 +17,9 @@ class Metropolis(Sampler):
         :param start: 
             Dictionary of starting state for the sampler. Should have one
             element for each argument of logp.
-        :param scale: **scalar or 1D array-like.**
+        :param scale: *scalar or 1D array-like.*
             initial scaling factor for proposal distribution.
-        :param tune_interval: **int.**
+        :param tune_interval: *int.*
             number of samples between tunings of scale factor.
 
         Example::

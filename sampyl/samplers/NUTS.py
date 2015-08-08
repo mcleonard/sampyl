@@ -40,17 +40,17 @@ class NUTS(Sampler):
         :param scale: (optional) 
             Dictionary with same format as start. Scaling for initial 
             momentum in Hamiltonian step.
-        :param step_size: (optional) **float.**
+        :param step_size: (optional) *float.*
             Initial step size for the deterministic proposals.
-        :param adapt_steps: (optional) **int.**
+        :param adapt_steps: (optional) *int.*
             Integer number of steps used for adapting the step size to 
             achieve a target acceptance rate.
-        :param Emax: (optional) **float.** Maximum energy.
-        :param target_accept: (optional) **float.** Target acceptance rate.
-        :param gamma: (optional) **float.**
-        :param k: (optional) **float.** Scales the speed of step size 
+        :param Emax: (optional) *float.* Maximum energy.
+        :param target_accept: (optional) *float.* Target acceptance rate.
+        :param gamma: (optional) *float.*
+        :param k: (optional) *float.* Scales the speed of step size 
             adaptation.
-        :param t0: (optional) **float.** Slows initial step size adaptation.
+        :param t0: (optional) *float.* Slows initial step size adaptation.
 
         Example::
 
