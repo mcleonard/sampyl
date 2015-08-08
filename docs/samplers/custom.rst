@@ -45,7 +45,6 @@ As an example, here's snippet from the :ref:`Metropolis <metropolis>` sampler. :
 
 .. module:: sampyl
 
-
 .. autoclass:: Sampler
     :members:
 
@@ -65,16 +64,3 @@ As an example, here's snippet from the :ref:`Metropolis <metropolis>` sampler. :
         samples as :ref:`states <state>`.
 
     **Methods**
-    
-
-    
-    
-
-
-
-Custom Samplers
-===============
-
-.. module:: sampyl
-
-.. autoclass:: Sampler

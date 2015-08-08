@@ -81,15 +81,15 @@ class Sampler(object):
         
         """ Sample from P(X)
 
-            :param num: **int.** Number of samples to return.
-            :param burn: (optional) **int.**
+            :param num: *int.* Number of samples to return.
+            :param burn: (optional) *int.*
                 Number of samples to discard from the beginning of the chain.
-            :param thin: (optional) **float.**
+            :param thin: (optional) *float.*
                 Thin the samples by this factor.
-            :param n_chains: (optional) **int.**
+            :param n_chains: (optional) *int.*
                 Number of chains to return. Each chain is given its own
                 process and the OS decides how to distribute the processes.
-            :param progress_bar: (optional) **boolean.**
+            :param progress_bar: (optional) *boolean.*
                 Show the progress bar, default = True.
             :return: Record array with fields taken from arguments of 
                 logp function.

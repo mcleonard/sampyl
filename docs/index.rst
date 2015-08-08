@@ -51,13 +51,12 @@ To show you how simple this can be, let's sample from a 2D correlated normal dis
 
 Start here
 ----------
-
-
 .. toctree::
    :maxdepth: 2
 
    introduction
    tutorial
+
 
 Examples
 --------
@@ -72,18 +71,6 @@ API
     model
     samplers
     state
-
-Samplers
---------
-
-.. toctree::
-	:maxdepth: 1
-
-	samplers/nuts
-	samplers/metropolis
-	samplers/slice
-	samplers/hamiltonian
-	samplers/custom
 
 
 Indices and tables
