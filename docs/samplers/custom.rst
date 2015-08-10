@@ -5,7 +5,9 @@ Custom Samplers
 
 You can build your own sampler by subclassing Sampler. A :ref:`model <model>`
 is automatically generated from `logp`. The sampler is also initialized with
-a :ref:`state` generated from `start` and the arguments of `logp`.
+a :ref:`state <state>` generated from `start` and the arguments of `logp`. With these,
+you define the `step` method, which should generate one sample and return a 
+:ref:`state <state>`.
 
 As an example, here's snippet from the :ref:`Metropolis <metropolis>` sampler. ::
 
@@ -15,7 +17,7 @@ As an example, here's snippet from the :ref:`Metropolis <metropolis>` sampler. :
     class Metropolis(Sampler):
 
         def __init__(self, logp, start, **kwargs):
-            # No gradient is necessary, so set it to None, and the flag to False
+            # No gradient is needed, so set it to None, and the flag to False
             super(Metropolis, self).__init__(logp, start, None, grad_logp_flag=False, **kwargs)
 
         def step(self):
