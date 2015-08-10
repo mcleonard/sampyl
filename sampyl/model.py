@@ -105,7 +105,6 @@ class Model(BaseModel):
             grad_value = grad_vec(self.grad_func, state)
             return grad_value
 
-        #print(type(frozen_state), frozen_state)
         if frozen_state in self._grad_cache:
             grad_value = self._grad_cache[frozen_state]
         else:
