@@ -46,7 +46,7 @@ def parallel(sampler, n_chains, samples, progress_bar=True, **kwargs):
         update_progress(n_samples, n_samples, end=True)
 
     burn, thin = kwargs.get('burn'), kwargs.get('thin')
-    chains = [chain[burn+1::thin] for chain in chains]
+    chains = [chain[burn::thin] for chain in chains]
     return chains
 
 

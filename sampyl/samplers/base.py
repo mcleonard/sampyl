@@ -76,7 +76,7 @@ class Sampler(object):
         """ This is what you define to create the sampler. """
         pass
 
-    def sample(self, num, burn=-1, thin=1, n_chains=1, progress_bar=True):
+    def sample(self, num, burn=0, thin=1, n_chains=1, progress_bar=True):
         """ Sample from distribution defined by logp.
 
             Parameters
@@ -127,7 +127,7 @@ class Sampler(object):
         # Clearing the cache after a run to save on memory.
         self.model.clear_cache()
 
-        return samples[burn+1::thin]
+        return samples[burn::thin]
 
 
 def default_scale(scale, state):
