@@ -11,9 +11,11 @@ livereload==2.4.0
 MarkupSafe==0.23
 matplotlib==1.4.3
 mistune==0.7
+mock==1.3.0
 numpy==1.9.2
 pandas==0.16.2
 pathtools==0.1.2
+pbr==1.4.0
 ptyprocess==0.4
 py==1.4.30
 Pygments==2.0.2
