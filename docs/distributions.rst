@@ -1,4 +1,5 @@
 Distributions
 =============
 
-Nothing here yet, but working on it.
+.. automodule:: distributions
+	:members:
