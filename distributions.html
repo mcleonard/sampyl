@@ -39,8 +39,173 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="distributions">
-<h1>Distributions<a class="headerlink" href="#distributions" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-distributions">
+<span id="distributions"></span><h1>Distributions<a class="headerlink" href="#module-distributions" title="Permalink to this headline">¶</a></h1>
+<p>Distribution log likelihoods for building Bayesian models.</p>
+<p>These should all automatically sum the log likelihoods if <cite>x</cite> is 
+a numpy array.</p>
+<dl class="function">
+<dt id="distributions.bernoulli">
+<code class="descclassname">distributions.</code><code class="descname">bernoulli</code><span class="sig-paren">(</span><em>k</em>, <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#distributions.bernoulli" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log likelihood for the bernoulli distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>k</strong> &#8211; <em>int, np.array.</em> Number of successes.</li>
+<li><strong>p</strong> &#8211; <em>int, float, np.array.</em> Success probability.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Special case of binomial distribution, with n set to 1.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="distributions.beta">
+<code class="descclassname">distributions.</code><code class="descname">beta</code><span class="sig-paren">(</span><em>x</em>, <em>alpha=1</em>, <em>beta=1</em><span class="sig-paren">)</span><a class="headerlink" href="#distributions.beta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log likelihood of beta distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> &#8211; <em>float, np.array.</em> Must be between 0 and 1.</li>
+<li><strong>alpha</strong> &#8211; (optional) <em>int, float.</em> Shape parameter, must be greater than 0.</li>
+<li><strong>beta</strong> &#8211; (optional) <em>int, float.</em> Shape parameter, must be greater than 0.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="math">
+\[\log{P(x; \alpha, \beta)} \propto (\alpha - 1)\log(x) +                                             (\beta - 1) \log(1 - x)\]</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="distributions.binomial">
+<code class="descclassname">distributions.</code><code class="descname">binomial</code><span class="sig-paren">(</span><em>k</em>, <em>n</em>, <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#distributions.binomial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log likelihood of the binomial distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>k</strong> &#8211; <em>int, np.array.</em> Number of successes.</li>
+<li><strong>n</strong> &#8211; <em>int, np.array.</em> Number of trials.</li>
+<li><strong>p</strong> &#8211; <em>int, float, np.array.</em> Success probability.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="math">
+\[\log{P(k; n, p)} \propto k \log(p) + (n-k)\log(1-p)\]</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="distributions.exponential">
+<code class="descclassname">distributions.</code><code class="descname">exponential</code><span class="sig-paren">(</span><em>x</em>, <em>rate=1</em><span class="sig-paren">)</span><a class="headerlink" href="#distributions.exponential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log likelihood of the exponential distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> &#8211; <em>int, float, np.array.</em></li>
+<li><strong>rate</strong> &#8211; (optional) <em>int, float, np.array.</em> Rate parameter, defaults to 1, 
+must be greater than 0.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="math">
+\[\log{P(x; \lambda)} \propto \log{\lambda} - \lambda x\]</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="distributions.normal">
+<code class="descclassname">distributions.</code><code class="descname">normal</code><span class="sig-paren">(</span><em>x</em>, <em>mu=0</em>, <em>sig=1</em><span class="sig-paren">)</span><a class="headerlink" href="#distributions.normal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log likelihood of a normal distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> &#8211; <em>int, float, np.array.</em></li>
+<li><strong>mu</strong> &#8211; (optional) <em>int, float, np.array.</em> 
+Location parameter of the normal distribution. Defaults to 0.</li>
+<li><strong>sig</strong> &#8211; (optional) <em>int, float.</em> 
+Standard deviation of the normal distribution, sqrt(variance).
+Defaults to 1.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="math">
+\[\log{P(x; \mu, \sigma)} \propto -\log{\sigma}              - \frac{(x - \mu)^2}{2 \sigma^2}\]</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="distributions.outofbounds">
+<code class="descclassname">distributions.</code><code class="descname">outofbounds</code><span class="sig-paren">(</span><em>*conditions</em><span class="sig-paren">)</span><a class="headerlink" href="#distributions.outofbounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function for catching out of bound parameters. Returns True if 
+any of the conditions aren&#8217;t met. Typically you&#8217;ll use this at the
+beginning of defining the log P(X) functions. Example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">logp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="c"># Bound x and y to be greater than 0</span>
+    <span class="k">if</span> <span class="n">outofbounds</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="distributions.poisson">
+<code class="descclassname">distributions.</code><code class="descname">poisson</code><span class="sig-paren">(</span><em>x</em>, <em>rate=1</em><span class="sig-paren">)</span><a class="headerlink" href="#distributions.poisson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log likelihood of the poisson distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> &#8211; <em>int, float, np.array.</em> Event count.</li>
+<li><strong>rate</strong> &#8211; (optional) <em>int, float, np.array.</em> Rate parameter, defaults to 1, 
+must be greater than 0.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="math">
+\[\log{P(x; \lambda)} \propto x*\log{\lambda} - \lambda\]</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="distributions.uniform">
+<code class="descclassname">distributions.</code><code class="descname">uniform</code><span class="sig-paren">(</span><em>x</em>, <em>lower=0</em>, <em>upper=1</em><span class="sig-paren">)</span><a class="headerlink" href="#distributions.uniform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log likelihood of uniform distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> &#8211; <em>int, float, np.array.</em></li>
+<li><strong>lower</strong> &#8211; (optional) <em>int, float.</em> Lower bound, default is 0.</li>
+<li><strong>upper</strong> &#8211; (optional) <em>int, float.</em> Upper bound, default is 1.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="math">
+\[\log{P(x; a, b)} = -n\log(b-a)\]</div>
+</dd></dl>
+
 </div>
 
 
