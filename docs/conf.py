@@ -288,15 +288,3 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
-
-# -- Things for ReadTheDocs --------------------------------------------------
-# Need to mock packages that depend on C extensions.
-from mock import Mock as MagicMock
-
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-            return Mock()
-
-MOCK_MODULES = ['numpy', 'pandas', 'scipy']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
