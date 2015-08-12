@@ -5,7 +5,7 @@
 from .core import np
 from functools import partial
 
-OUTOFBOUNDS = -np.inf
+OUTOFBOUNDS = -1*np.inf
 
 
 def bound(f, *conditions):

@@ -33,7 +33,7 @@ after = np.random.poisson(9, size=12)
 def poisson_logp(lam1, lam2):
     # Rates for Poisson must be > 0
     if lam1 <= 0 or lam2 <=0:
-        return -np.inf
+        return -1*np.inf
     else:
         # logps for likelihoods
         llh1 = np.sum(before*np.log(lam1)) - before.size*lam1

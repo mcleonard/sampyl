@@ -14,7 +14,7 @@ def outofbounds(*conditions):
             def logp(x, y):
                 # Bound x and y to be greater than 0
                 if outofbounds(x > 0, y > 0):
-                    return -np.inf
+                    return -1*np.inf
     
     """
 
@@ -61,7 +61,7 @@ def uniform(x, lower=0, upper=1):
     """
 
     if outofbounds(x > lower, x < upper):
-        return -np.inf
+        return -1*np.inf
     
     return - np.size(x) * np.log(upper-lower)
 
@@ -79,7 +79,7 @@ def exponential(x, rate=1):
     """
 
     if outofbounds(rate > 0):
-        return -np.inf
+        return -1*np.inf
 
     if np.size(rate) != 1 and len(x) != len(rate):
         raise ValueError('If rate is a vector, x must be the same size as rate.'
@@ -100,7 +100,7 @@ def poisson(x, rate=1):
     """
 
     if outofbounds(rate > 0):
-        return -np.inf
+        return -1*np.inf
     
     if np.size(rate) != 1 and len(x) != len(rate):
         raise ValueError('If rate is a vector, x must be the same size as rate.'
@@ -120,7 +120,7 @@ def binomial(k, n, p):
     """
 
     if outofbounds(0 < p, p < 1):
-        return -np.inf
+        return -1*np.inf
     return np.sum(k*np.log(p) + (n-k)*np.log(1-p))
 
 
@@ -149,7 +149,7 @@ def beta(x, alpha=1, beta=1):
     """
 
     if outofbounds(0 < x, x < 1, alpha > 0, beta > 0):
-        return -np.inf
+        return -1*np.inf
     return np.sum((alpha - 1)*np.log(x) + (beta - 1)*np.log(1-x))
 
 def student_t():
