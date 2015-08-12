@@ -5,7 +5,7 @@
 
 """
 
-from .core import np
+from sampyl.core import np
 
 
 def outofbounds(*conditions):

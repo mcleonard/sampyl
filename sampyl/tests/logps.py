@@ -22,7 +22,7 @@ n = len(data)
 def normal_logp(mu, sig):
     likelihood = -n*0.5*np.log(sig**2) - \
                   np.sum((data - mu)**2)/(2*sig**2)
-    mu_prior = smp.priors.uniform(mu, 5, 15)
+    mu_prior = smp.uniform(mu, 5, 15)
     sig_prior = -np.log(np.abs(sig))
     return likelihood + mu_prior + sig_prior
 
