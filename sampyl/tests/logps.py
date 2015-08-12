@@ -1,7 +1,6 @@
 from __future__ import division
 
 from ..core import np, auto_grad_logp
-from ..priors import bound, prior_map
 import sampyl as smp
 
 __all__ = ['normal_1D_logp', 'normal_1D_grad_logp', 'normal_logp',
@@ -55,11 +54,13 @@ true_b = np.random.randn(5)
 x = np.random.rand(5, 10)
 data = np.dot(true_b, x)
 def linear_model_logp(b, sig):
+    if smp.outofbounds(sig > 0):
+        return np.negative(np.inf)
     mu = np.dot(b, x)
     n = len(data)
     likelihood = -n*0.5*np.log(2*np.pi) - \
                   n*0.5*np.log(sig**2) - \
                   np.sum((data - mu)**2)/(2*sig**2)
-    prior_sig = bound(-np.log(np.abs(sig)), sig <= 0)
-    prior_b = prior_map(smp.priors.uniform, b, lower=-5, upper=5).sum()
+    prior_sig = -np.log(np.abs(sig))
+    prior_b = smp.uniform(b, lower=-5, upper=10)
     return likelihood + prior_sig + prior_b

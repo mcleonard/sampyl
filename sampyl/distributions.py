@@ -5,8 +5,10 @@
 
 """
 
+from .core import np
 
-def outofbounds(*conditio1ns):
+
+def outofbounds(*conditions):
     """ Utility function for catching out of bound parameters. Returns True if 
         any of the conditions aren't met. Typically you'll use this at the
         beginning of defining the log P(X) functions. Example ::
