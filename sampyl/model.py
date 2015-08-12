@@ -1,4 +1,13 @@
-""" Model for access to logp and grad functions """
+"""
+sampyl.model
+~~~~~~~~~~~~~~~~~~~~
+
+Model for access to logp and grad functions.
+
+:copyright: (c) 2015 by Mat Leonard.
+:license: Apache2, see LICENSE for more details.
+
+"""
 
 
 import collections

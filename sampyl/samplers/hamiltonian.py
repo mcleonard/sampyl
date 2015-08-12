@@ -1,3 +1,15 @@
+"""
+sampyl.samplers.hamiltonian
+~~~~~~~~~~~~~~~~~~~~
+
+Module implementing Hamiltonian MCMC sampler.
+
+:copyright: (c) 2015 by Mat Leonard.
+:license: Apache2, see LICENSE for more details.
+
+"""
+
+
 from __future__ import division
 
 from ..core import np

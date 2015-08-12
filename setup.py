@@ -18,7 +18,7 @@ classifiers = ['Development Status :: 1 - Pre-Alpha',
 
 if __name__ == "__main__":
     setup(name='sampyl',
-          version='0.2.1',
+          version='0.2.2',
           description='MCMC Samplers',
           author='Mat Leonard',
           author_email='leonard.mat@gmail.com',

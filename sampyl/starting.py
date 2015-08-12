@@ -1,5 +1,14 @@
-""" Module for calculating the maximum a posteriori for use in a starting
-    value for the samplers. """
+"""
+sampyl.starting
+~~~~~~~~~~~~~~~~~~~~
+
+Module for calculating the maximum a posteriori for use in a starting
+value for the samplers.
+
+:copyright: (c) 2015 by Mat Leonard.
+:license: Apache2, see LICENSE for more details.
+
+"""
 
 from .core import np, AUTOGRAD, auto_grad_logp
 from scipy.optimize import minimize

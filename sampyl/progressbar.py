@@ -1,5 +1,15 @@
-import sys
+"""
+sampyl.progressbar
+~~~~~~~~~~~~~~~~~~~~
 
+Progress bar for samplers.
+
+:copyright: (c) 2015 by Mat Leonard.
+:license: Apache2, see LICENSE for more details.
+
+"""
+
+import sys
 
 def update_progress(current, total, width=30, end=False):
     bar_width = width

@@ -3,6 +3,7 @@ sampyl.samplers.NUTS
 ~~~~~~~~~~~~~~~~~~~~
 
 This module implements No-U-Turn Sampler (NUTS).
+
 :copyright: (c) 2015 by Mat Leonard.
 :license: Apache2, see LICENSE for more details.
 
