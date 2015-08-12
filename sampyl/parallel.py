@@ -18,6 +18,7 @@ from multiprocessing import Pool
 
 from .core import np, AUTOGRAD
 from .samplers import *
+from .distributions import *
 from .state import State
 from .progressbar import update_progress
 

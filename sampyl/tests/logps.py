@@ -32,7 +32,7 @@ after = np.random.poisson(9, size=12)
 def poisson_logp(lam1, lam2):
     # Rates for Poisson must be > 0
     if lam1 <= 0 or lam2 <=0:
-        return np.negative(np.inf)
+        return -np.inf
     else:
         # logps for likelihoods
         llh1 = np.sum(before*np.log(lam1)) - before.size*lam1
@@ -55,7 +55,7 @@ x = np.random.rand(5, 10)
 data = np.dot(true_b, x)
 def linear_model_logp(b, sig):
     if smp.outofbounds(sig > 0):
-        return np.negative(np.inf)
+        return -np.inf
     mu = np.dot(b, x)
     n = len(data)
     likelihood = -n*0.5*np.log(2*np.pi) - \
