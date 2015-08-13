@@ -21,7 +21,7 @@ Next, we want to consider our prior information about :math:`N`, :math:`P(N)`. W
     P(D \mid N) &\sim \mathrm{DiscreteUniform}(D, min=0, max=N) \\
     P(N) &\sim \mathrm{DiscreteUniform}(N, min=m, max=10000) \\
 
-Now we can build the model with Sampyl ans sample from the posterior. ::
+Now we can build the model with Sampyl and sample from the posterior. ::
 
     import sampyl as smp
     from sampyl import np
