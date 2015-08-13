@@ -1,0 +1,5 @@
+Distributions
+=============
+
+.. automodule:: distributions
+	:members:
