@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>No-U-Turn Sampler (NUTS) &mdash; Sampyl 0.2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Sampyl 0.2.2 documentation" href="../index.html" />
+    <link rel="up" title="Samplers" href="../samplers.html" />
+    <link rel="next" title="Metropolis-Hastings Sampler" href="metropolis.html" />
+    <link rel="prev" title="Samplers" href="../samplers.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-sampyl">
+<span id="no-u-turn-sampler-nuts"></span><span id="nuts"></span><h1>No-U-Turn Sampler (NUTS)<a class="headerlink" href="#module-sampyl" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="sampyl.NUTS">
+<em class="property">class </em><code class="descclassname">sampyl.</code><code class="descname">NUTS</code><span class="sig-paren">(</span><em>logp</em>, <em>start</em>, <em>step_size=0.25</em>, <em>adapt_steps=100</em>, <em>Emax=1000.0</em>, <em>target_accept=0.65</em>, <em>gamma=0.05</em>, <em>k=0.75</em>, <em>t0=10.0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sampyl.NUTS" title="Permalink to this definition">¶</a></dt>
+<dd><p>No-U-Turn sampler (Hoffman &amp; Gelman, 2014) for sampling from a
+probability distribution defined by a log P(theta) function.</p>
+<p>For technical details, see the paper:
+<a class="reference external" href="http://www.stat.columbia.edu/~gelman/research/published/nuts.pdf">http://www.stat.columbia.edu/~gelman/research/published/nuts.pdf</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>logp</strong> &#8211; log P(X) function for sampling distribution</li>
+<li><strong>start</strong> &#8211; Dictionary of starting state for the sampler. Should have one
+element for each argument of logp.</li>
+<li><strong>grad_logp</strong> &#8211; <p>(optional)
+Function or list of functions that calculate grad log P(theta). 
+Pass functions here if you don&#8217;t want to use autograd for the 
+gradients. If logp has multiple parameters, grad_logp must be 
+a list of gradient functions w.r.t. each parameter in logp.</p>
+<p>If you wish to use a logp function that returns both the logp
+value and the gradient, set grad_logp = True.</p>
+</li>
+<li><strong>scale</strong> &#8211; (optional) 
+Dictionary with same format as start. Scaling for initial 
+momentum in Hamiltonian step.</li>
+<li><strong>step_size</strong> &#8211; (optional) <em>float.</em>
+Initial step size for the deterministic proposals.</li>
+<li><strong>adapt_steps</strong> &#8211; (optional) <em>int.</em>
+Integer number of steps used for adapting the step size to 
+achieve a target acceptance rate.</li>
+<li><strong>Emax</strong> &#8211; (optional) <em>float.</em> Maximum energy.</li>
+<li><strong>target_accept</strong> &#8211; (optional) <em>float.</em> Target acceptance rate.</li>
+<li><strong>gamma</strong> &#8211; (optional) <em>float.</em></li>
+<li><strong>k</strong> &#8211; (optional) <em>float.</em> Scales the speed of step size 
+adaptation.</li>
+<li><strong>t0</strong> &#8211; (optional) <em>float.</em> Slows initial step size adaptation.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">logp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;x&#39;</span><span class="p">:</span> <span class="n">x_start</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">:</span> <span class="n">y_start</span><span class="p">}</span>
+<span class="n">nuts</span> <span class="o">=</span> <span class="n">sampyl</span><span class="o">.</span><span class="n">NUTS</span><span class="p">(</span><span class="n">logp</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+<span class="n">chain</span> <span class="o">=</span> <span class="n">nuts</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="sampyl.NUTS.sample">
+<code class="descname">sample</code><span class="sig-paren">(</span><em>num</em>, <em>burn=0</em>, <em>thin=1</em>, <em>n_chains=1</em>, <em>progress_bar=True</em><span class="sig-paren">)</span><a class="headerlink" href="#sampyl.NUTS.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample from P(X)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num</strong> &#8211; <em>int.</em> Number of samples to return.</li>
+<li><strong>burn</strong> &#8211; (optional) <em>int.</em>
+Number of samples to discard from the beginning of the chain.</li>
+<li><strong>thin</strong> &#8211; (optional) <em>float.</em>
+Thin the samples by this factor.</li>
+<li><strong>n_chains</strong> &#8211; (optional) <em>int.</em>
+Number of chains to return. Each chain is given its own
+process and the OS decides how to distribute the processes.</li>
+<li><strong>progress_bar</strong> &#8211; (optional) <em>boolean.</em>
+Show the progress bar, default = True.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Record array with fields taken from arguments of 
+logp function.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sampyl.NUTS.step">
+<code class="descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sampyl.NUTS.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform one NUTS step.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../samplers.html">Samplers</a><ul>
+      <li>Previous: <a href="../samplers.html" title="previous chapter">Samplers</a></li>
+      <li>Next: <a href="metropolis.html" title="next chapter">Metropolis-Hastings Sampler</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/samplers/nuts.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Mat Leonard, Andrew Miller.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="../_sources/samplers/nuts.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
