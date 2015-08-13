@@ -1,5 +1,0 @@
-Distributions
-=============
-
-.. automodule:: distributions
-	:members:
