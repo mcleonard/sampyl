@@ -60,7 +60,11 @@ Start here
 
 Examples
 --------
-Examples here.
+
+.. toctree::
+    :maxdepth: 1
+    
+    examples/german_tank_problem
 
 API
 ---

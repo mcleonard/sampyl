@@ -28,13 +28,13 @@ def outofbounds(*conditions):
 
 
 def normal(x, mu=0, sig=1):
-    """ Log likelihood of a normal distribution.
+    """ Normal distribution log-likelihood.
 
         :param x:  *int, float, np.array.*
         :param mu: (optional) *int, float, np.array.* 
             Location parameter of the normal distribution. Defaults to 0.
         :param sig: (optional) *int, float.* 
-            Standard deviation of the normal distribution, sqrt(variance).
+            Standard deviation of the normal distribution, :math:`\\sig > 0`.
             Defaults to 1.
 
         .. math::
@@ -50,7 +50,7 @@ def normal(x, mu=0, sig=1):
 
 
 def uniform(x, lower=0, upper=1):
-    """ Log likelihood of uniform distribution. 
+    """ Uniform distribution log-likelihood. Bounds are inclusive.
 
         :param x:  *int, float, np.array.*
         :param lower: (optional) *int, float.* Lower bound, default is 0.
@@ -62,18 +62,43 @@ def uniform(x, lower=0, upper=1):
 
     """
 
-    if outofbounds(x > lower, x < upper):
+    if outofbounds(x >= lower, x <= upper):
         return -np.inf
     
-    return - np.size(x) * np.log(upper-lower)
+    return -np.size(x) * np.log(upper-lower)
+
+def discrete_uniform(x, lower=0, upper=1):
+    """ Discrete Uniform distribution log-likelihood.
+
+        :param x:  *int, np.array[int].* 
+        :param lower: (optional) *int, float.* Lower bound, default is 0.
+        :param upper: (optional) *int, float.* Upper bound, default is 1.
+
+        .. math ::
+
+            \log{P(x; a, b)} = -n\log(b-a)
+    """
+
+    if outofbounds(x >= lower, x <= upper):
+        return -np.inf
+
+    if isinstance(x, np.ndarray):
+        if x.dtype != np.int_:
+            raise ValueError('x must be integers, function received {}'.format(x))
+        else:
+            return -np.size(x) * np.log(upper-lower)
+    elif isinstance(x, int) or isinstance(x, np.int_):
+        return -np.log(upper-lower)
+    else:
+        return -np.inf
+
 
 
 def exponential(x, rate=1):
     """ Log likelihood of the exponential distribution. 
 
         :param x:  *int, float, np.array.*
-        :param rate: (optional) *int, float, np.array.* Rate parameter, defaults to 1, 
-            must be greater than 0.
+        :param rate: (optional) *int, float, np.array.* Rate parameter, :math:`\lambda > 0`. Defaults to 1.
 
         .. math ::
             
@@ -90,14 +115,14 @@ def exponential(x, rate=1):
 
 
 def poisson(x, rate=1):
-    """ Log likelihood of the poisson distribution.
+    """ Poisson distribution log-likelihood.
 
         :param x:  *int, float, np.array.* Event count.
-        :param rate: (optional) *int, float, np.array.* Rate parameter, defaults to 1, 
-            must be greater than 0.
+        :param rate: (optional) *int, float, np.array.* Rate parameter, :math:`\lambda > 0`. Defaults to 1.
+            
 
         .. math ::
-            \log{P(x; \lambda)} \propto x*\log{\lambda} - \lambda
+            \log{P(x; \lambda)} \propto x \log{\lambda} - \lambda
 
     """
 
@@ -111,14 +136,14 @@ def poisson(x, rate=1):
 
 
 def binomial(k, n, p):
-    """ Log likelihood of the binomial distribution.
+    """ Binomial distribution log-likelihood.
 
         :param k: *int, np.array.* Number of successes.
         :param n: *int, np.array.* Number of trials.
         :param p: *int, float, np.array.* Success probability.
         
         .. math::
-            \log{P(k; n, p)} \propto k \log(p) + (n-k)\log(1-p)
+            \log{P(k; n, p)} \propto k \log{p} + (n-k)\log{(1-p)}
     """
 
     if outofbounds(0 < p, p < 1):
@@ -127,7 +152,7 @@ def binomial(k, n, p):
 
 
 def bernoulli(k, p):
-    """ Log likelihood for the bernoulli distribution. 
+    """ Bernoulli distribution log-likelihood. 
 
         :param k: *int, np.array.* Number of successes.
         :param p: *int, float, np.array.* Success probability.
@@ -139,22 +164,68 @@ def bernoulli(k, p):
 
 
 def beta(x, alpha=1, beta=1):
-    """ Log likelihood of beta distribution.
+    """ Beta distribution log-likelihood.
 
-        :param x: *float, np.array.* Must be between 0 and 1.
-        :param alpha: (optional) *int, float.* Shape parameter, must be greater than 0.
-        :param beta: (optional) *int, float.* Shape parameter, must be greater than 0.
+        :param x: *float, np.array.* :math:`0 < x < 1`
+        :param alpha: (optional) *int, float.* Shape parameter, :math:`\\alpha > 0`.
+        :param beta: (optional) *int, float.* Shape parameter, :math:`\\beta > 0`.
 
         .. math ::
-            \log{P(x; \\alpha, \\beta)} \propto (\\alpha - 1)\log(x) + \
-                                            (\\beta - 1) \log(1 - x)
+            \log{P(x; \\alpha, \\beta)} \propto (\\alpha - 1)\log{x} + \
+                                            (\\beta - 1) \log{(1 - x)}
     """
 
     if outofbounds(0 < x, x < 1, alpha > 0, beta > 0):
         return -np.inf
     return np.sum((alpha - 1)*np.log(x) + (beta - 1)*np.log(1-x))
 
-def student_t():
-    pass
+def student_t(x, nu=1):
+    """ Student's t log-likelihood
+
+        :param x: *int, float, np.array.*
+        :param nu: (optional) *int.* Degress of freedom.
+    
+        .. math ::
+            \log{P(x; \\nu)} \propto \log{\Gamma \\left(\\frac{\\nu+1}{2} \\right)} - \
+                                     \log{\Gamma \left( \\frac{\\nu}{2} \\right) } - \
+                                     \\frac{1}{2}\log{\\nu} - \
+                                     \\frac{\\nu+1}{2}\log{\left(1 + \\frac{x^2}{\\nu} \\right)}
+    """
+    return np.sum(np.log(gamma(0.5*(nu + 1))) - np.log(gamma(nu/2.)) - \
+            0.5*np.log(nu) - (nu+1)/2*np.log(1+x**2/nu))
+
+def laplace(x, mu, tau):
+    """ Laplace distribution log-likelihood 
+
+        :param x: *int, float, np.array.* :math:`-\infty < \mu < \infty`
+        :param mu: *int, float, np.array.* Location parameter. :math:`-\infty < \mu < \infty`
+        :param tau: *int, float.* Scale parameter, :math:`\\tau > 0`
+
+        .. math ::
+            \log{P(x; \\mu, \\tau)} \propto \log{\\tau/2} - \\tau \\left|x - \mu \\right|
+
+    """
+    if outofbounds(tau > 0):
+        return -np.inf
+    
+    return np.sum(np.log(tau) - tau*np.abs(x - mu))
+
+def cauchy(x, alpha=0, beta=1):
+    """ Cauchy distribution log-likelihood.
+
+        :param x: *int, float, np.array.* :math:`-\infty < x < \infty`.
+        :param alpha: *int, float, nparray.* Location parameter, :math:`-\infty < \\alpha < \infty`.
+        :param beta: *int, float.* Scale parameter, :math:`\\beta > 0`.
+
+        .. math::
+            \log{P(x; \\alpha, \\beta)} \propto -\log{\\beta} - \
+                                                \log{\left[1 + \left(\\frac{x - \\alpha}{\\beta}\\right)^2\\right]} 
+
+
+    """
+    if outofbounds(beta > 0):
+        return -np.inf
+
+    return np.sum(-np.log(beta) - np.log(1 + ((x - alpha)/beta)**2))
 
 
