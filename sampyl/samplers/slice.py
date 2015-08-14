@@ -1,3 +1,15 @@
+"""
+sampyl.samplers.slice
+~~~~~~~~~~~~~~~~~~~~
+
+This module implements the slice sampler.
+
+:copyright: (c) 2015 by Andrew Miller.
+:license: Apache2, see LICENSE for more details.
+
+"""
+
+
 from __future__ import division
 
 from ..core import np
@@ -6,7 +18,29 @@ from .base import Sampler
 
 
 class Slice(Sampler):
-    # TODO: Allow for sticking in different proposal distributions.
+    """ Slice sampler (Neal, 2003) for creating a Markov chain that 
+        leaves the the distribution defined by logp invariant
+
+        For technical details, see Neal's paper:
+            http://projecteuclid.org/euclid.aos/1056562461
+
+        Andrew Miller (acm@seas.harvard.edu) 7-13-15
+
+        Adapted from code written by Ryan Adams (rpa@seas.harvard.edu)
+
+        :param logp: *function.* :math:`\log{P(X)}` function for sampling
+                                 distribution.
+        :param start: *scalar or 1D array-like.* Starting state for sampler.
+        :param compwise: (optional) *boolean.* Component-wise univariate 
+                         slice sample
+                         (or random direction)
+        :param width: (optional) *int, float.* (Initial) width of the slice
+        :param step_out: (optional) *boolean.* Perform step-out procedure
+        :param doubling_step: (optional) *boolean.* If stepping out, double
+                              slice width?
+        :param max_steps_out: (optional) *int.* Max number of steps out to perform
+        :param verbose: (optional) *boolean.* Print steps out
+    """
 
     def __init__(self, logp,
                        start,
@@ -17,37 +51,7 @@ class Slice(Sampler):
                        max_steps_out = 10,
                        verbose       = False,
                        **kwargs):
-        """ Slice sampler (Neal, 2003) for creating a markov chain that 
-            leaves the the distribution defined by logp invariant
-
-            For technical details, see Neal's paper:
-                http://projecteuclid.org/euclid.aos/1056562461
-
-            Andrew Miller (acm@seas.harvard.edu) 7-13-15
-            Adapted from an code written by Ryan Adams (rpa@seas.harvard.edu)
-
-            Arguments
-            ----------
-            logp: function
-                log P(X) function for sampling distribution
-            start: scalar or 1D array-like
-                starting state for sampler
-
-            Keyword Arguments
-            -----------------
-            compwise: boolean
-                component-wise univariate slice sample (or random direction)
-            width: scalar
-                (initial) width of the slice
-            step_out: boolean
-                perform step-out procedure
-            doubling_step: boolean
-                if stepping out, double slice width?
-            max_steps_out: scalar
-                max number of steps out to perform
-            verbose:
-                print steps out
-        """
+        
         
         super(Slice, self).__init__(logp, start, None, grad_logp_flag=False,
                                              **kwargs)

@@ -79,9 +79,10 @@ class Sampler(object):
 
     def sample(self, num, burn=0, thin=1, n_chains=1, progress_bar=True):
         
-        """ Sample from P(X)
+        """ 
+            Sample from :math:`P(X)`
 
-            :param num: *int.* Number of samples to return.
+            :param num: *int.* Number of samples to draw from :math:`P(X)`.
             :param burn: (optional) *int.*
                 Number of samples to discard from the beginning of the chain.
             :param thin: (optional) *float.*

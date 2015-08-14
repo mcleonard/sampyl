@@ -8,13 +8,11 @@ Sampyl: MCMC samplers in Python
 Release v\ |version|
 
 Sampyl is a Python library implementing Markov Chain Monte Carlo (MCMC) samplers
-in Python. It's designed for use in Bayesian parameter estimation. Currently, 
-only the samplers are implemented, but we plan on providing common distributions 
-to aid in creating Bayesian models.
+in Python. It's designed for use in Bayesian parameter estimation and provides a collection of distribution log-likelihoods for use in constructing models.
 
 Our goal with Sampyl is allow users to define models completely with Python and
 common packages like Numpy. Other MCMC packages require learning new syntax and
-semantics while all that is really needed is a function that calculates log P(X)
+semantics while all that is really needed is a function that calculates :math:`\log{P(X)}`
 for the sampling distribution.
 
 Sampyl allows the user to define a model any way they want, all that is required
@@ -62,14 +60,14 @@ Examples
 --------
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
     
-    examples/german_tank_problem
+    examples
 
 API
 ---
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     distributions
     model

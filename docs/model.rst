@@ -3,10 +3,7 @@
 Model
 =====
 
-The model is completely defined by log P(X). You can use this object to get 
-log P(X) and/or the gradient. Models contain caches for both log P(X) and the
-gradient. This is intended to be used when building new models as users won't
-typically need this.
+The model is a class to make accessing log P(X) and grad log P(X) functions easier. Models contain caches for both log P(X) and the gradient. This is intended to be used when building new samplers, users won't typically need this.
 
 There are two models currently. :ref:`Model <model_class>` expects separate
 log P(X) and gradient functions. :ref:`SingleModel <single_model_class>`

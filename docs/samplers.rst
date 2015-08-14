@@ -16,7 +16,7 @@ Example::
     nuts = smp.NUTS(logp, start)
     chain = nuts.sample(1000)
 
-Creating your own :ref:`custom samplers <custom>` is possible and straightfoward.  
+Creating your own :ref:`custom samplers <custom>` is possible and straightfoward.
 
 .. toctree::
 

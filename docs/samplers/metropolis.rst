@@ -6,4 +6,5 @@ Metropolis-Hastings Sampler
 .. module:: sampyl
 
 .. autoclass:: Metropolis
-	:inherited-members:
+    :members:
+    :inherited-members:

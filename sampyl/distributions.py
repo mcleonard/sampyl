@@ -1,11 +1,16 @@
-""" Distribution log likelihoods for building Bayesian models. 
+""" 
 
-    These should all automatically sum the log likelihoods if `x` is 
-    a numpy array.
+:copyright: (c) 2015 by Mat Leonard.
+:license: Apache2, see LICENSE for more details.
+
+Distribution log likelihoods for building Bayesian models. 
+
+These should all automatically sum the log likelihoods if `x` is a numpy array.
 
 """
 
 from sampyl.core import np
+from scipy.special import gamma
 
 
 def outofbounds(*conditions):
@@ -34,7 +39,7 @@ def normal(x, mu=0, sig=1):
         :param mu: (optional) *int, float, np.array.* 
             Location parameter of the normal distribution. Defaults to 0.
         :param sig: (optional) *int, float.* 
-            Standard deviation of the normal distribution, :math:`\\sig > 0`.
+            Standard deviation of the normal distribution, :math:`\sigma > 0`.
             Defaults to 1.
 
         .. math::
@@ -138,14 +143,15 @@ def poisson(x, rate=1):
 def binomial(k, n, p):
     """ Binomial distribution log-likelihood.
 
-        :param k: *int, np.array.* Number of successes.
-        :param n: *int, np.array.* Number of trials.
-        :param p: *int, float, np.array.* Success probability.
+        :param k: *int, np.array.* Number of successes. :math:`k <= n`
+        :param n: *int, np.array.* Number of trials. :math:`n > 0`
+        :param p: *int, float, np.array.* Success probability. :math:`0<= p <= 1`
         
         .. math::
             \log{P(k; n, p)} \propto k \log{p} + (n-k)\log{(1-p)}
     """
-
+    if k > n:
+        raise ValueError("k must be less than or equal to n")
     if outofbounds(0 < p, p < 1):
         return -np.inf
     return np.sum(k*np.log(p) + (n-k)*np.log(1-p))
@@ -167,8 +173,8 @@ def beta(x, alpha=1, beta=1):
     """ Beta distribution log-likelihood.
 
         :param x: *float, np.array.* :math:`0 < x < 1`
-        :param alpha: (optional) *int, float.* Shape parameter, :math:`\\alpha > 0`.
-        :param beta: (optional) *int, float.* Shape parameter, :math:`\\beta > 0`.
+        :param alpha: (optional) *int, float.* Shape parameter, :math:`\\alpha > 0`
+        :param beta: (optional) *int, float.* Shape parameter, :math:`\\beta > 0`
 
         .. math ::
             \log{P(x; \\alpha, \\beta)} \propto (\\alpha - 1)\log{x} + \
@@ -194,6 +200,7 @@ def student_t(x, nu=1):
     return np.sum(np.log(gamma(0.5*(nu + 1))) - np.log(gamma(nu/2.)) - \
             0.5*np.log(nu) - (nu+1)/2*np.log(1+x**2/nu))
 
+
 def laplace(x, mu, tau):
     """ Laplace distribution log-likelihood 
 
@@ -213,9 +220,9 @@ def laplace(x, mu, tau):
 def cauchy(x, alpha=0, beta=1):
     """ Cauchy distribution log-likelihood.
 
-        :param x: *int, float, np.array.* :math:`-\infty < x < \infty`.
-        :param alpha: *int, float, nparray.* Location parameter, :math:`-\infty < \\alpha < \infty`.
-        :param beta: *int, float.* Scale parameter, :math:`\\beta > 0`.
+        :param x: *int, float, np.array.* :math:`-\infty < x < \infty`
+        :param alpha: *int, float, nparray.* Location parameter, :math:`-\infty < \\alpha < \infty`
+        :param beta: *int, float.* Scale parameter, :math:`\\beta > 0`
 
         .. math::
             \log{P(x; \\alpha, \\beta)} \propto -\log{\\beta} - \
@@ -227,5 +234,25 @@ def cauchy(x, alpha=0, beta=1):
         return -np.inf
 
     return np.sum(-np.log(beta) - np.log(1 + ((x - alpha)/beta)**2))
+
+def weibull(x, l, k):
+    """ Weibull distribution log-likelihood. 
+
+        :param x: *int, float, np.array.* :math:`x > 0`
+        :param l: *float.* Scale parameter. :math:`\\lambda > 0`
+        :param k: *float.* Shape parameter. :math:`k > 0`
+
+    """
+
+    if outofbounds(l > 0, k > 0, x > 0):
+        return -np.inf
+
+    return np.sum(np.log(k/l) + (k-1)*np.log(x/l) - (x/l)**k)
+
+
+
+
+
+
 
 
