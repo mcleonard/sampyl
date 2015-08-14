@@ -32,7 +32,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
 
   </head>
-  <body role="document">  
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="samplers.html" title="Samplers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="distributions.html" title="Distributions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Sampyl 0.2.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -41,10 +59,7 @@
             
   <div class="section" id="model">
 <span id="id1"></span><h1>Model<a class="headerlink" href="#model" title="Permalink to this headline">¶</a></h1>
-<p>The model is completely defined by log P(X). You can use this object to get
-log P(X) and/or the gradient. Models contain caches for both log P(X) and the
-gradient. This is intended to be used when building new models as users won&#8217;t
-typically need this.</p>
+<p>The model is a class to make accessing log P(X) and grad log P(X) functions easier. Models contain caches for both log P(X) and the gradient. This is intended to be used when building new samplers, users won&#8217;t typically need this.</p>
 <p>There are two models currently. <a class="reference internal" href="#model-class"><span>Model</span></a> expects separate
 log P(X) and gradient functions. <a class="reference internal" href="#single-model-class"><span>SingleModel</span></a>
 expects one function that returns both log P(x) and the gradient.</p>
@@ -177,22 +192,41 @@ the gradient. Caches values to improve performance.</p>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Sampyl</a></h1>
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=mcleonard&repo=sampyl&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
 <ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="distributions.html" title="previous chapter">Distributions</a></li>
-      <li>Next: <a href="samplers.html" title="next chapter">Samplers</a></li>
-  </ul></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 </ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/model.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="distributions.html">Distributions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samplers.html">Samplers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="state.html">State</a></li>
+</ul>
+
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="distributions.html"
+                        title="previous chapter">Distributions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="samplers.html"
+                        title="next chapter">Samplers</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -215,11 +249,11 @@ the gradient. Caches values to improve performance.</p>
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
       
       |
       <a href="_sources/model.txt"
-          rel="nofollow">Page source</a>
+          rel="nofollow">Page source</a></li>
     </div>
 
     

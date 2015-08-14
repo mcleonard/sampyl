@@ -25,14 +25,32 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="Sampyl 0.2.2 documentation" href="index.html" />
-    <link rel="next" title="Distributions" href="distributions.html" />
+    <link rel="next" title="Examples" href="examples.html" />
     <link rel="prev" title="Introduction" href="introduction.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
 
   </head>
-  <body role="document">  
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Sampyl 0.2.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -41,6 +59,113 @@
             
   <div class="section" id="tutorial">
 <h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="defining-a-model">
+<h2>Defining a model<a class="headerlink" href="#defining-a-model" title="Permalink to this headline">¶</a></h2>
+<p>Here I&#8217;ll demonstrate how to use Sampyl with a simple linear model. First, I will create some fake data. Then, I will build a model and sample from the posterior distribution to estimate the coefficients from the synthetic data.</p>
+<p>With a linear model, we assume the data is drawn from a normal distribution</p>
+<div class="math">
+\[\begin{split}Y &amp;\sim N(\mu, \sigma^2) \\
+\mu &amp;= \beta_0 + \beta_1 x_1 + ... + \beta_n x_n\end{split}\]</div>
+<p>where <span class="math">\(\beta_n\)</span> are coefficients we want to estimate and <span class="math">\(x_n\)</span> are the predictor variables in our data.</p>
+<p>Let&#8217;s start by making some fake data.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Number of data points</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">200</span>
+
+<span class="c"># True parameters</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">true_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+
+<span class="c"># Features, including a constant</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">true_b</span><span class="p">)))</span>
+<span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">true_b</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c"># Outcomes</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">true_b</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="o">*</span><span class="n">sigma</span>
+</pre></div>
+</div>
+<img alt="_images/linear_model_data.png" src="_images/linear_model_data.png" />
+<p>Above I&#8217;ve plotted the data we generated. We have the outcomes <code class="code docutils literal"><span class="pre">y</span></code> and our features <code class="code docutils literal"><span class="pre">X</span></code>, now we want to build a model to estimate the coefficients from this data. We can start with Bayes theorem</p>
+<div class="math">
+\[P(\beta, \sigma \mid D) \propto P(D \mid \beta, \sigma)\, P(\beta)\, P(\sigma)\]</div>
+<p>The left hand side <span class="math">\(P(\beta, \sigma \mid D)\)</span> is the posterior distribution. This is a probability distribution of likely values for <span class="math">\(\beta\)</span> and <span class="math">\(\sigma\)</span>, given our data <span class="math">\(D\)</span>. On the right side is the data likelihood <span class="math">\(P(D \mid \beta, \sigma)\)</span> which gives the probability that we would see our data, given the parameters <span class="math">\(\beta\)</span> and <span class="math">\(\sigma\)</span>. Finally, we have our priors, <span class="math">\(P(\beta)\)</span> and <span class="math">\(P(\sigma)\)</span>. These distributions represent our prior information about the parameters.</p>
+<p>Bayes theorem is quite intuitive because it is very similar to how humans think naturally. Suppose you are on a road trip, and you know its roughly an hour until you arrive, but its been a while since you saw the last sign with the distance so you aren&#8217;t too sure. Then, you do see a sign and it says you still have 65 miles (104 km). Now you have a pretty good idea that it&#8217;ll be another hour, but you aren&#8217;t completely certain because traffic might be slow, or it could take a bit once you get into the city. This is how Bayes theorem works too. You have some prior information about your arrival time, but you&#8217;re fairly uncertain. Then, you see some data, the distance remaining, and you update your information about the arrival time.</p>
+<p>Continuing on with the model, we want the likelihood, <span class="math">\(P(D \mid \beta, \sigma)\)</span>, to model our data. We are assuming we can predict the data with a linear sum of coefficients <span class="math">\(\beta_n\)</span> with our predictors <span class="math">\(x_n\)</span>, with some normally distributed noise on the scale of <span class="math">\(\sigma\)</span>. So our likelihood would be well modeled with a normal distribution.</p>
+<p>We also want to assign probability distributions to <span class="math">\(\beta\)</span> and <span class="math">\(\sigma\)</span> to account for our uncertainty in those parameters and our prior information about them. This is done through the priors <span class="math">\(P(\beta)\, P(\sigma)\)</span>. For <span class="math">\(\sigma\)</span>, we must choose a distribution that is defined only above 0. An exponential is good for this and we can control the <em>diffuseness</em> of the prior by changing the rate parameter. High rates pull the prior closer to 0, while lower rates push it out. We are using fairly wide normal priors for the coefficients <span class="math">\(\beta\)</span>, since we aren&#8217;t sure <em>a priori</em> how large the coefficients will be. Putting this all together, we get our model</p>
+<div class="math">
+\[\begin{split}P(\beta, \sigma \mid D) &amp;\propto P(D \mid \beta, \sigma)\, P(\beta)\, P(\sigma) \\
+P(D \mid \beta, \sigma) &amp;\sim \mathrm{Normal}(\mu, \sigma^2) \\
+\mu &amp;= \sum \beta_i x_i \\
+\beta &amp;\sim \mathrm{Normal}(0, 100) \\
+\sigma &amp;\sim \mathrm{Exponential}(1)\end{split}\]</div>
+<p>Every sampler implemented in Sampyl takes a function that calculates <span class="math">\(\log{P(\theta)}\)</span> of the sampling distribution. We want to sample from the model posterior, so we need to write a Python function that calculates <span class="math">\(\log{P(\beta, \sigma \mid D)}\)</span>. I&#8217;ll build the full model then go through it with explanations.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sampyl</span> <span class="kn">as</span> <span class="nn">smp</span>
+<span class="kn">from</span> <span class="nn">sampyl</span> <span class="kn">import</span> <span class="n">np</span>
+
+<span class="c"># Here, b is a length 3 array of coefficients</span>
+<span class="k">def</span> <span class="nf">logp</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">sig</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">smp</span><span class="o">.</span><span class="n">outofbounds</span><span class="p">(</span><span class="n">sig</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+    <span class="c"># Predicted value</span>
+    <span class="n">y_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="c"># Log-likelihood</span>
+    <span class="n">llh</span> <span class="o">=</span> <span class="n">smp</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">sig</span><span class="o">=</span><span class="n">sig</span><span class="p">)</span>
+
+    <span class="c"># log-priors</span>
+    <span class="n">prior_sig</span> <span class="o">=</span> <span class="n">smp</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+    <span class="n">prior_b</span> <span class="o">=</span> <span class="n">smp</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sig</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">llh</span> <span class="o">+</span> <span class="n">prior_sig</span> <span class="o">+</span> <span class="n">prior_b</span>
+</pre></div>
+</div>
+<p>First, look at the imports, particularly <code class="docutils literal"><span class="pre">from</span> <span class="pre">sampyl</span> <span class="pre">import</span> <span class="pre">np</span></code>. If you have worked with Numpy, you know it is usually abbreviated as <code class="docutils literal"><span class="pre">np</span></code>, but why have we imported it from Sampyl here? Some of the samplers we have implemented require the gradient of <span class="math">\(\log{P(\theta)}\)</span>. To make things simpler, we use a wonderful package <a class="reference external" href="https://github.com/HIPS/autograd">autograd</a> to automatically calculate gradients. To use autograd, our <span class="math">\(\log{P(\theta)}\)</span> function needs to be written with Numpy provided by autograd. So, Sampyl imports Numpy from autograd, which you then import from Sampyl to build the model.</p>
+<p>Next, check out the function definition. We named it <code class="docutils literal"><span class="pre">logp</span></code> but this can be anything. The arguments <code class="docutils literal"><span class="pre">b</span></code> and <code class="docutils literal"><span class="pre">sig</span></code> are the parameters of the model. They can either be Numpy arrays or scalars such as integers or floats.</p>
+<p>The next line:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">smp</span><span class="o">.</span><span class="n">outofbounds</span><span class="p">(</span><span class="n">sig</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+</pre></div>
+</div>
+<p>It&#8217;s best to catch proposed parameters that are out of bounds early so as to avoid unnecessary computation later in the function. For this, we&#8217;ve provided a function <code class="docutils literal"><span class="pre">outofbounds</span></code> that accepts bounds as conditions. For example, we know that <span class="math">\(\sigma &gt; 0\)</span>, so we want to catch it early and immediately return from the function. We return <code class="docutils literal"><span class="pre">-np.inf</span></code> because when the parameter is out of bounds <span class="math">\(P(\theta) = 0\)</span>, and</p>
+<div class="math">
+\[\lim_{P(\theta) \to 0}\log{P(\theta)} = -\infty.\]</div>
+<p>Onwards:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">y_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here our function has been passed <code class="docutils literal"><span class="pre">b</span></code> which is an length 3 numpy array, a vector. We want to make a prediction of the outcome, <code class="docutils literal"><span class="pre">y_hat</span></code>, then use this as the mean of our likelihood.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">llh</span> <span class="o">=</span> <span class="n">smp</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">sig</span><span class="o">=</span><span class="n">sig</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is the log-likelihood of our data, given our parameters, <span class="math">\(P(D \mid \beta, \sigma)\)</span>. It is important to note that <code class="docutils literal"><span class="pre">smp.normal(y,</span> <span class="pre">mu=y_hat,</span> <span class="pre">sig=sig)</span></code> returns a number, the log-likelihood of a normal distribution with the passed parameters. There is nothing going on behind the scene, just a function that returns a number. Then,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">prior_sig</span> <span class="o">=</span> <span class="n">smp</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">prior_b</span> <span class="o">=</span> <span class="n">smp</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sig</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here we have defined our priors. Again, <code class="docutils literal"><span class="pre">smp.exponential</span></code> and <code class="docutils literal"><span class="pre">smp.normal</span></code> return a scalar value of the distribution log-likelihood.</p>
+<p>Finally</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">return</span> <span class="n">llh</span> <span class="o">+</span> <span class="n">prior_sig</span> <span class="o">+</span> <span class="n">prior_b</span>
+</pre></div>
+</div>
+<p>As I noted earlier, the distribution functions return log-likelihoods, just numbers. Since we are calculating <span class="math">\(\log{P(\beta, \sigma \mid D)}\)</span>,</p>
+<div class="math">
+\[\begin{split}\log{P(\beta, \sigma \mid D)} &amp;\propto \log{\left[P(D \mid \beta, \sigma)\, P(\beta)\, P(\sigma) \right]} \\
+\log{P(\beta, \sigma \mid D)} &amp;\propto \log{P(D \mid \beta, \sigma)} + \log{P(\beta)} + \log{P(\sigma)}\end{split}\]</div>
+<p>we just add up the log-likelihoods! Again, nothing fancy going on here, just beautiful math with logarithms. Now that we have defined <span class="math">\(\log{P(\beta, \sigma \mid D)}\)</span>, we can draw samples from it using one of our samplers.</p>
+</div>
+<div class="section" id="sampling-from-the-posterior">
+<h2>Sampling from the posterior<a class="headerlink" href="#sampling-from-the-posterior" title="Permalink to this headline">¶</a></h2>
+<p>Each sampler provided by Sampyl requires a <span class="math">\(\log{P(X)}\)</span> function, <code class="docutils literal"><span class="pre">logp</span></code> here, and a starting state. A good place to start is the maximum of the posterior, typically called the <em>maximum a posteriori</em> or MAP. You can also define <code class="docutils literal"><span class="pre">start</span></code> yourself, it just needs to be a dictionary where the keys are the arguments of <code class="docutils literal"><span class="pre">logp</span></code>. Here we&#8217;ll use the No-U-Turn Sampler (NUTS)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">start</span> <span class="o">=</span> <span class="n">smp</span><span class="o">.</span><span class="n">find_MAP</span><span class="p">(</span><span class="n">logp</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="s">&#39;sig&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">})</span>
+<span class="n">nuts</span> <span class="o">=</span> <span class="n">smp</span><span class="o">.</span><span class="n">NUTS</span><span class="p">(</span><span class="n">logp</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+<span class="n">chain</span> <span class="o">=</span> <span class="n">nuts</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">2100</span><span class="p">,</span> <span class="n">burn</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>So first, we find the MAP and pass it as a start value to the NUTS sampler. This returns the sampler object itself <code class="docutils literal"><span class="pre">nuts</span></code>. It is important to provide the correct size arguments as starting values. Our function <code class="docutils literal"><span class="pre">logp</span></code> expects <code class="docutils literal"><span class="pre">b</span></code> to be a length 3 Numpy array, so that is what we need to provide to <code class="docutils literal"><span class="pre">find_MAP</span></code> or <code class="docutils literal"><span class="pre">NUTS</span></code>.</p>
+<p>Calling <code class="docutils literal"><span class="pre">nuts.sample(2100,</span> <span class="pre">burn=100)</span></code> returns a chain of 2000 samples from the posterior distribution, where we have discarded the first 100 as a burn-in period. Below is a plot of the chains, using matplotlib.</p>
+<img alt="_static\linear_model_posterior.png" src="_static\linear_model_posterior.png" />
+<p>I&#8217;ve also included dashed lines indicating the true parameters. In the future, we will be providing functionality to return various statistics and intervals for the posterior. For more guidance, please look through the other examples provided in the documentation.</p>
+</div>
 </div>
 
 
@@ -48,22 +173,45 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="introduction.html" title="previous chapter">Introduction</a></li>
-      <li>Next: <a href="distributions.html" title="next chapter">Distributions</a></li>
-  </ul></li>
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Sampyl</a></h1>
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=mcleonard&repo=sampyl&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#defining-a-model">Defining a model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sampling-from-the-posterior">Sampling from the posterior</a></li>
 </ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/tutorial.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="distributions.html">Distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samplers.html">Samplers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="state.html">State</a></li>
+</ul>
+
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="introduction.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="next chapter">Examples</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -86,11 +234,11 @@
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
       
       |
       <a href="_sources/tutorial.txt"
-          rel="nofollow">Page source</a>
+          rel="nofollow">Page source</a></li>
     </div>
 
     

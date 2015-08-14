@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>State &mdash; Sampyl 0.2.2 documentation</title>
+    <title>Examples &mdash; Sampyl 0.2.2 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,7 +25,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="Sampyl 0.2.2 documentation" href="index.html" />
-    <link rel="prev" title="Custom Samplers" href="samplers/custom.html" />
+    <link rel="next" title="German Tank Problem" href="examples/german_tank_problem.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -42,7 +43,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="samplers/custom.html" title="Custom Samplers"
+          <a href="examples/german_tank_problem.html" title="German Tank Problem"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Sampyl 0.2.2 documentation</a> &raquo;</li> 
       </ul>
@@ -53,48 +57,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="state">
-<span id="id1"></span><h1>State<a class="headerlink" href="#state" title="Permalink to this headline">¶</a></h1>
-<p>State objects are used to store the current state of the Markov chain. States are subclassed from collections.OrderedDict so that the elements are in a known order.</p>
-<span class="target" id="module-sampyl"></span><span class="target" id="module-state"></span><dl class="class">
-<dt id="state.State">
-<em class="property">class </em><code class="descclassname">state.</code><code class="descname">State</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#state.State" title="Permalink to this definition">¶</a></dt>
-<dd><p>State object for storing parameter values.</p>
-<p>Inherits from OrderedDict.</p>
-<dl class="method">
-<dt id="state.State.freeze">
-<code class="descname">freeze</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#state.State.freeze" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a immutable tuple of the state values.</p>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="state.State.fromfunc">
-<em class="property">static </em><code class="descname">fromfunc</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#state.State.fromfunc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize a State from the arguments of a function</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="state.State.fromvector">
-<code class="descname">fromvector</code><span class="sig-paren">(</span><em>vec</em><span class="sig-paren">)</span><a class="headerlink" href="#state.State.fromvector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the state using a numpy array.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vec</strong> &#8211; np.array for updating the state.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="state.State.tovector">
-<code class="descname">tovector</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#state.State.tovector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the parameter values as a flat vector.</p>
-</dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="examples">
+<span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>Here are various models built with Sampyl.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/german_tank_problem.html">German Tank Problem</a></li>
+</ul>
+</div>
 </div>
 
 
@@ -120,20 +90,26 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 </ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
-</ul>
 <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/german_tank_problem.html">German Tank Problem</a></li>
+</ul>
+</li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="distributions.html">Distributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="samplers.html">Samplers</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">State</a></li>
+<li class="toctree-l1"><a class="reference internal" href="state.html">State</a></li>
 </ul>
 
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="samplers/custom.html"
-                        title="previous chapter">Custom Samplers</a></p>
+  <p class="topless"><a href="tutorial.html"
+                        title="previous chapter">Tutorial</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples/german_tank_problem.html"
+                        title="next chapter">German Tank Problem</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -159,7 +135,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
       
       |
-      <a href="_sources/state.txt"
+      <a href="_sources/examples.txt"
           rel="nofollow">Page source</a></li>
     </div>
 

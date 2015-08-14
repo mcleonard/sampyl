@@ -33,7 +33,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
 
   </head>
-  <body role="document">  
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="hamiltonian.html" title="Hamiltonian MCMC Sampler"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="metropolis.html" title="Metropolis-Hastings Sampler"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Sampyl 0.2.2 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../samplers.html" accesskey="U">Samplers</a> &raquo;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -45,7 +64,37 @@
 <dl class="class">
 <dt id="sampyl.Slice">
 <em class="property">class </em><code class="descclassname">sampyl.</code><code class="descname">Slice</code><span class="sig-paren">(</span><em>logp</em>, <em>start</em>, <em>compwise=False</em>, <em>width=1.0</em>, <em>step_out=True</em>, <em>doubling_step=True</em>, <em>max_steps_out=10</em>, <em>verbose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sampyl.Slice" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Slice sampler (Neal, 2003) for creating a Markov chain that 
+leaves the the distribution defined by logp invariant</p>
+<dl class="docutils">
+<dt>For technical details, see Neal&#8217;s paper:</dt>
+<dd><a class="reference external" href="http://projecteuclid.org/euclid.aos/1056562461">http://projecteuclid.org/euclid.aos/1056562461</a></dd>
+</dl>
+<p>Andrew Miller (<a class="reference external" href="mailto:acm&#37;&#52;&#48;seas&#46;harvard&#46;edu">acm<span>&#64;</span>seas<span>&#46;</span>harvard<span>&#46;</span>edu</a>) 7-13-15</p>
+<p>Adapted from code written by Ryan Adams (<a class="reference external" href="mailto:rpa&#37;&#52;&#48;seas&#46;harvard&#46;edu">rpa<span>&#64;</span>seas<span>&#46;</span>harvard<span>&#46;</span>edu</a>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>logp</strong> &#8211; <em>function.</em> <span class="math">\(\log{P(X)}\)</span> function for sampling
+distribution.</li>
+<li><strong>start</strong> &#8211; <em>scalar or 1D array-like.</em> Starting state for sampler.</li>
+<li><strong>compwise</strong> &#8211; (optional) <em>boolean.</em> Component-wise univariate 
+slice sample
+(or random direction)</li>
+<li><strong>width</strong> &#8211; (optional) <em>int, float.</em> (Initial) width of the slice</li>
+<li><strong>step_out</strong> &#8211; (optional) <em>boolean.</em> Perform step-out procedure</li>
+<li><strong>doubling_step</strong> &#8211; (optional) <em>boolean.</em> If stepping out, double
+slice width?</li>
+<li><strong>max_steps_out</strong> &#8211; (optional) <em>int.</em> Max number of steps out to perform</li>
+<li><strong>verbose</strong> &#8211; (optional) <em>boolean.</em> Print steps out</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
 <dt id="sampyl.Slice.direction_slice">
 <code class="descname">direction_slice</code><span class="sig-paren">(</span><em>direction</em>, <em>init_x</em><span class="sig-paren">)</span><a class="headerlink" href="#sampyl.Slice.direction_slice" title="Permalink to this definition">¶</a></dt>
 <dd><p>one dimensional directional slice sample along direction specified
@@ -55,13 +104,13 @@ Implements the stepping out procedure from Neal</p>
 <dl class="method">
 <dt id="sampyl.Slice.sample">
 <code class="descname">sample</code><span class="sig-paren">(</span><em>num</em>, <em>burn=0</em>, <em>thin=1</em>, <em>n_chains=1</em>, <em>progress_bar=True</em><span class="sig-paren">)</span><a class="headerlink" href="#sampyl.Slice.sample" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sample from P(X)</p>
+<dd><p>Sample from <span class="math">\(P(X)\)</span></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>num</strong> &#8211; <em>int.</em> Number of samples to return.</li>
+<li><strong>num</strong> &#8211; <em>int.</em> Number of samples to draw from <span class="math">\(P(X)\)</span>.</li>
 <li><strong>burn</strong> &#8211; (optional) <em>int.</em>
 Number of samples to discard from the beginning of the chain.</li>
 <li><strong>thin</strong> &#8211; (optional) <em>float.</em>
@@ -97,24 +146,48 @@ logp function.</p>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Sampyl</a></h1>
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=mcleonard&repo=sampyl&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
 <ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="../samplers.html">Samplers</a><ul>
-      <li>Previous: <a href="metropolis.html" title="previous chapter">Metropolis-Hastings Sampler</a></li>
-      <li>Next: <a href="hamiltonian.html" title="next chapter">Hamiltonian MCMC Sampler</a></li>
-  </ul></li>
-  </ul></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 </ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/samplers/slice.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../distributions.html">Distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model.html">Model</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../samplers.html">Samplers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="nuts.html">No-U-Turn Sampler (NUTS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metropolis.html">Metropolis-Hastings Sampler</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Slice Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamiltonian.html">Hamiltonian MCMC Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom.html">Custom Samplers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../state.html">State</a></li>
+</ul>
+
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="metropolis.html"
+                        title="previous chapter">Metropolis-Hastings Sampler</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="hamiltonian.html"
+                        title="next chapter">Hamiltonian MCMC Sampler</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
@@ -137,11 +210,11 @@ logp function.</p>
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
       
       |
       <a href="../_sources/samplers/slice.txt"
-          rel="nofollow">Page source</a>
+          rel="nofollow">Page source</a></li>
     </div>
 
     

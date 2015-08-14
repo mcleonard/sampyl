@@ -32,7 +32,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
 
   </head>
-  <body role="document">  
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="model.html" title="Model"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="examples/german_tank_problem.html" title="German Tank Problem"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Sampyl 0.2.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -41,9 +59,22 @@
             
   <div class="section" id="module-distributions">
 <span id="distributions"></span><h1>Distributions<a class="headerlink" href="#module-distributions" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">copyright:</th><td class="field-body"><ol class="first loweralpha simple" start="3">
+<li>2015 by Mat Leonard.</li>
+</ol>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">license:</th><td class="field-body"><p class="first last">Apache2, see LICENSE for more details.</p>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Distribution log likelihoods for building Bayesian models.</p>
-<p>These should all automatically sum the log likelihoods if <cite>x</cite> is 
-a numpy array.</p>
+<p>These should all automatically sum the log likelihoods if <cite>x</cite> is a numpy array.</p>
 <dl class="function">
 <dt id="distributions.bernoulli">
 <code class="descclassname">distributions.</code><code class="descname">bernoulli</code><span class="sig-paren">(</span><em>k</em>, <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#distributions.bernoulli" title="Permalink to this definition">¶</a></dt>
@@ -73,8 +104,8 @@ a numpy array.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>x</strong> &#8211; <em>float, np.array.</em> <span class="math">\(0 &lt; x &lt; 1\)</span></li>
-<li><strong>alpha</strong> &#8211; (optional) <em>int, float.</em> Shape parameter, <span class="math">\(\alpha &gt; 0\)</span>.</li>
-<li><strong>beta</strong> &#8211; (optional) <em>int, float.</em> Shape parameter, <span class="math">\(\beta &gt; 0\)</span>.</li>
+<li><strong>alpha</strong> &#8211; (optional) <em>int, float.</em> Shape parameter, <span class="math">\(\alpha &gt; 0\)</span></li>
+<li><strong>beta</strong> &#8211; (optional) <em>int, float.</em> Shape parameter, <span class="math">\(\beta &gt; 0\)</span></li>
 </ul>
 </td>
 </tr>
@@ -93,9 +124,9 @@ a numpy array.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>k</strong> &#8211; <em>int, np.array.</em> Number of successes.</li>
-<li><strong>n</strong> &#8211; <em>int, np.array.</em> Number of trials.</li>
-<li><strong>p</strong> &#8211; <em>int, float, np.array.</em> Success probability.</li>
+<li><strong>k</strong> &#8211; <em>int, np.array.</em> Number of successes. <span class="math">\(k &lt;= n\)</span></li>
+<li><strong>n</strong> &#8211; <em>int, np.array.</em> Number of trials. <span class="math">\(n &gt; 0\)</span></li>
+<li><strong>p</strong> &#8211; <em>int, float, np.array.</em> Success probability. <span class="math">\(0&lt;= p &lt;= 1\)</span></li>
 </ul>
 </td>
 </tr>
@@ -114,9 +145,9 @@ a numpy array.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>x</strong> &#8211; <em>int, float, np.array.</em> <span class="math">\(-\infty &lt; x &lt; \infty\)</span>.</li>
-<li><strong>alpha</strong> &#8211; <em>int, float, nparray.</em> Location parameter, <span class="math">\(-\infty &lt; \alpha &lt; \infty\)</span>.</li>
-<li><strong>beta</strong> &#8211; <em>int, float.</em> Scale parameter, <span class="math">\(\beta &gt; 0\)</span>.</li>
+<li><strong>x</strong> &#8211; <em>int, float, np.array.</em> <span class="math">\(-\infty &lt; x &lt; \infty\)</span></li>
+<li><strong>alpha</strong> &#8211; <em>int, float, nparray.</em> Location parameter, <span class="math">\(-\infty &lt; \alpha &lt; \infty\)</span></li>
+<li><strong>beta</strong> &#8211; <em>int, float.</em> Scale parameter, <span class="math">\(\beta &gt; 0\)</span></li>
 </ul>
 </td>
 </tr>
@@ -201,7 +232,7 @@ a numpy array.</p>
 <li><strong>mu</strong> &#8211; (optional) <em>int, float, np.array.</em> 
 Location parameter of the normal distribution. Defaults to 0.</li>
 <li><strong>sig</strong> &#8211; (optional) <em>int, float.</em> 
-Standard deviation of the normal distribution, <span class="math">\(\sig &gt; 0\)</span>.
+Standard deviation of the normal distribution, <span class="math">\(\sigma &gt; 0\)</span>.
 Defaults to 1.</li>
 </ul>
 </td>
@@ -287,6 +318,25 @@ beginning of defining the log P(X) functions. Example</p>
 \[\log{P(x; a, b)} = -n\log(b-a)\]</div>
 </dd></dl>
 
+<dl class="function">
+<dt id="distributions.weibull">
+<code class="descclassname">distributions.</code><code class="descname">weibull</code><span class="sig-paren">(</span><em>x</em>, <em>l</em>, <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#distributions.weibull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weibull distribution log-likelihood.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> &#8211; <em>int, float, np.array.</em> <span class="math">\(x &gt; 0\)</span></li>
+<li><strong>l</strong> &#8211; <em>float.</em> Scale parameter. <span class="math">\(\lambda &gt; 0\)</span></li>
+<li><strong>k</strong> &#8211; <em>float.</em> Shape parameter. <span class="math">\(k &gt; 0\)</span></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 
 
@@ -294,22 +344,41 @@ beginning of defining the log P(X) functions. Example</p>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Sampyl</a></h1>
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=mcleonard&repo=sampyl&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
 <ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="examples/german_tank_problem.html" title="previous chapter">German Tank Problem</a></li>
-      <li>Next: <a href="model.html" title="next chapter">Model</a></li>
-  </ul></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 </ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/distributions.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samplers.html">Samplers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="state.html">State</a></li>
+</ul>
+
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="examples/german_tank_problem.html"
+                        title="previous chapter">German Tank Problem</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="model.html"
+                        title="next chapter">Model</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -332,11 +401,11 @@ beginning of defining the log P(X) functions. Example</p>
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
       
       |
       <a href="_sources/distributions.txt"
-          rel="nofollow">Page source</a>
+          rel="nofollow">Page source</a></li>
     </div>
 
     

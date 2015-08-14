@@ -32,7 +32,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
 
   </head>
-  <body role="document">  
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Sampyl: MCMC samplers in Python"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Sampyl 0.2.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -41,6 +59,25 @@
             
   <div class="section" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="what-are-we-doing-here">
+<h2>What are we doing here?<a class="headerlink" href="#what-are-we-doing-here" title="Permalink to this headline">¶</a></h2>
+<p>Sampyl provides <a class="reference external" href="https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo">Markov Chain Monte Carlo</a> (MCMC) samplers for drawing from probability distributions. Typically, this is used to sample from the posterior distribution of a Bayesian model. Other MCMC packages such as <a class="reference external" href="https://github.com/pymc-devs/pymc3">PyMC</a> and <a class="reference external" href="https://pystan.readthedocs.org/en/latest/">PyStan</a>, while great and you should check them out, require you to create models using non-Pythonic syntax and semantics. Sampyl allows you to create models completely with Python and Numpy. All that is required is a function that calculates <span class="math">\(\log{P(X)}\)</span> for the sampling distribution. You can create this function however you want.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Currently Sampyl is not ready for prime-time, so I haven&#8217;t put it on PyPI yet. However, you can install it with pip from the GitHub repository:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install git+https://github.com/mcleonard/sampyl
+</pre></div>
+</div>
+<p>Sampyl depends on Numpy and Scipy. For samplers such as Hamiltonian MC and NUTS, Sampyl uses <a class="reference external" href="https://github.com/HIPS/autograd/">autograd</a> for automatic gradient calculations, but it is optional.</p>
+</div>
+<div class="section" id="sampyl-license">
+<h2>Sampyl License<a class="headerlink" href="#sampyl-license" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2015 Mat Leonard</p>
+<p>Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License. You may obtain a copy of the License at</p>
+<p><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+<p>Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.</p>
+</div>
 </div>
 
 
@@ -48,22 +85,46 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Sampyl: MCMC samplers in Python</a></li>
-      <li>Next: <a href="tutorial.html" title="next chapter">Tutorial</a></li>
-  </ul></li>
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Sampyl</a></h1>
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=mcleonard&repo=sampyl&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-are-we-doing-here">What are we doing here?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sampyl-license">Sampyl License</a></li>
 </ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/introduction.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="distributions.html">Distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samplers.html">Samplers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="state.html">State</a></li>
+</ul>
+
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Sampyl: MCMC samplers in Python</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="next chapter">Tutorial</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -86,11 +147,11 @@
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
       
       |
       <a href="_sources/introduction.txt"
-          rel="nofollow">Page source</a>
+          rel="nofollow">Page source</a></li>
     </div>
 
     
