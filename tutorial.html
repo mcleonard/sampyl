@@ -83,7 +83,7 @@
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">true_b</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="o">*</span><span class="n">sigma</span>
 </pre></div>
 </div>
-<img alt="_images/linear_model_data.png" src="_images/linear_model_data.png" />
+<img alt="_images/linear_model_data.png" class="align-center" src="_images/linear_model_data.png" />
 <p>Above I&#8217;ve plotted the data we generated. We have the outcomes <code class="code docutils literal"><span class="pre">y</span></code> and our features <code class="code docutils literal"><span class="pre">X</span></code>, now we want to build a model to estimate the coefficients from this data. We can start with Bayes theorem</p>
 <div class="math">
 \[P(\beta, \sigma \mid D) \propto P(D \mid \beta, \sigma)\, P(\beta)\, P(\sigma)\]</div>
@@ -162,8 +162,14 @@ P(D \mid \beta, \sigma) &amp;\sim \mathrm{Normal}(\mu, \sigma^2) \\
 </pre></div>
 </div>
 <p>So first, we find the MAP and pass it as a start value to the NUTS sampler. This returns the sampler object itself <code class="docutils literal"><span class="pre">nuts</span></code>. It is important to provide the correct size arguments as starting values. Our function <code class="docutils literal"><span class="pre">logp</span></code> expects <code class="docutils literal"><span class="pre">b</span></code> to be a length 3 Numpy array, so that is what we need to provide to <code class="docutils literal"><span class="pre">find_MAP</span></code> or <code class="docutils literal"><span class="pre">NUTS</span></code>.</p>
-<p>Calling <code class="docutils literal"><span class="pre">nuts.sample(2100,</span> <span class="pre">burn=100)</span></code> returns a chain of 2000 samples from the posterior distribution, where we have discarded the first 100 as a burn-in period. Below is a plot of the chains, using matplotlib.</p>
-<img alt="_static\linear_model_posterior.png" src="_static\linear_model_posterior.png" />
+<p>Calling <code class="docutils literal"><span class="pre">nuts.sample(2100,</span> <span class="pre">burn=100)</span></code> returns a chain of 2000 samples from the posterior distribution, where we have discarded the first 100 as a burn-in period. The chain we get is a <a class="reference external" href="http://docs.scipy.org/doc/numpy/user/basics.rec.html">Numpy record array</a> so that we can access the posterior distribution for each parameter by name. For instance, to get the posterior samples for <code class="docutils literal"><span class="pre">b</span></code> with <code class="docutils literal"><span class="pre">chain.b</span></code></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/linear_model_coefficients.png" class="align-center" src="_images/linear_model_coefficients.png" />
+<p>Below is a plot of the posterior samples for each parameter.</p>
+<img alt="_images/linear_model_posterior.png" class="align-center" src="_images/linear_model_posterior.png" />
 <p>I&#8217;ve also included dashed lines indicating the true parameters. In the future, we will be providing functionality to return various statistics and intervals for the posterior. For more guidance, please look through the other examples provided in the documentation.</p>
 </div>
 </div>

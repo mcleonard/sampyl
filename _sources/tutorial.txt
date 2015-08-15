@@ -31,6 +31,7 @@ Let's start by making some fake data. ::
 	y = np.dot(X, true_b) + np.random.randn(N)*sigma
 
 .. image:: _static/linear_model_data.png
+	:align: center
 
 Above I've plotted the data we generated. We have the outcomes :code:`y` and our features :code:`X`, now we want to build a model to estimate the coefficients from this data. We can start with Bayes theorem
 
@@ -132,8 +133,17 @@ Each sampler provided by Sampyl requires a :math:`\log{P(X)}` function, ``logp``
 
 So first, we find the MAP and pass it as a start value to the NUTS sampler. This returns the sampler object itself ``nuts``. It is important to provide the correct size arguments as starting values. Our function ``logp`` expects ``b`` to be a length 3 Numpy array, so that is what we need to provide to ``find_MAP`` or ``NUTS``.
 
-Calling ``nuts.sample(2100, burn=100)`` returns a chain of 2000 samples from the posterior distribution, where we have discarded the first 100 as a burn-in period. Below is a plot of the chains, using matplotlib.
+Calling ``nuts.sample(2100, burn=100)`` returns a chain of 2000 samples from the posterior distribution, where we have discarded the first 100 as a burn-in period. The chain we get is a `Numpy record array <http://docs.scipy.org/doc/numpy/user/basics.rec.html>`_ so that we can access the posterior distribution for each parameter by name. For instance, to get the posterior samples for ``b`` with ``chain.b`` ::
 
-.. image:: _static\linear_model_posterior.png
+	import matplotlib.pyplot as plt
+	plt.plot(chain.b)
+
+.. image:: _static/linear_model_coefficients.png
+	:align: center
+
+Below is a plot of the posterior samples for each parameter.
+
+.. image:: _static/linear_model_posterior.png
+	:align: center
 
 I've also included dashed lines indicating the true parameters. In the future, we will be providing functionality to return various statistics and intervals for the posterior. For more guidance, please look through the other examples provided in the documentation.
