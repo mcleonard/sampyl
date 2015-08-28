@@ -19,9 +19,8 @@ class Sampler(object):
 
         self._logp_func = logp
         self._grad_func = grad_logp
-        self.var_names = func_var_names(logp)
 
-        self.state = State.fromkeys(self.var_names)
+        self.state = State.fromkeys(self.model.var_names)
         self.state.update(start)
 
         self.scale = default_scale(scale, self.state)
@@ -62,7 +61,7 @@ class Sampler(object):
         state = self.step()
 
         # Add the frozen variables back into the state
-        new_state = State([(name, None) for name in self.var_names])
+        new_state = State([(name, None) for name in self.model.var_names])
         for var in state:
             new_state.update({var: state[var]})
         for var in frozen_vars:
@@ -137,10 +136,12 @@ def default_scale(scale, state):
         the shape of values in state.
     """
 
+    new_scale = State.fromkeys(state.keys())
     if scale is None:
-        new_scale = State.fromkeys(state.keys())
         for var in state:
             new_scale.update({var: np.ones(np.shape(state[var]))})
-        return new_scale
     else:
-        return scale
+        new_scale.update(scale)
+    
+    return new_scale
+

@@ -84,7 +84,13 @@ def proposal(state, scale):
     """ Sample a proposal x from a multivariate normal distribution. """
     proposed = State.fromkeys(state.keys())
     for i, var in enumerate(state):
-        proposed.update({var: np.random.normal(state[var], scale[var])})
+        mu = state[var]
+        if np.size(mu) > 1:
+            cov = np.diagflat(np.abs(scale[var]))
+            prop = np.random.multivariate_normal(mu, cov)
+        else:
+            prop = np.random.normal(mu, np.abs(scale[var]))
+        proposed.update({var: prop})
     return proposed
 
 

@@ -84,5 +84,6 @@ def init_samplers(sampler, n_chains, chains=None):
         for sampler, chain in zip(samplers, chains):
             sampler.state.update({var: val for var, val
                                   in zip(sampler.state, chain[-1])})
+            sampler.seed = np.random.randint(0, 2**16)
 
     return samplers

@@ -61,7 +61,7 @@ class Hamiltonian(Sampler):
         y, r = x, r0
 
         for i in range(self.n_steps):
-            y, r = leapfrog(y, r, self.step_size, self.model.grad)
+            y, r = leapfrog(y, r, self.step_size, self.model.grad, self.scale)
 
         if accept(x, y, r0, r, self.model.logp):
             x = y
@@ -76,9 +76,9 @@ class Hamiltonian(Sampler):
         return self._accepted/self._sampled
 
 
-def leapfrog(x, r, step_size, grad):
+def leapfrog(x, r, step_size, grad, scale=1):
     r1 = r + step_size/2*grad(x)
-    x1 = x + step_size*r1
+    x1 = x + step_size*r1/scale
     r2 = r1 + step_size/2*grad(x1)
     return x1, r2
 
@@ -96,14 +96,15 @@ def energy(logp, x, r):
 
 
 def initial_momentum(state, scale):
-    new = State.fromkeys(state.keys())
+    p = State.fromkeys(state.keys())
     for var in state:
         mu = np.zeros(np.shape(state[var]))
-        cov = np.diagflat(scale[var])
+        scaling = np.abs(scale[var])
+        cov = np.diagflat(scaling)
         try:
-            new.update({var: np.random.multivariate_normal(mu, cov)})
+            p.update({var: np.random.multivariate_normal(mu, cov)})
         except ValueError:
             # If the var is a single float
-            new.update({var: np.random.normal(0, scale[var])})
+            p.update({var: np.random.normal(0, scaling)})
 
-    return new
+    return p

@@ -150,7 +150,7 @@ def binomial(k, n, p):
         .. math::
             \log{P(k; n, p)} \propto k \log{p} + (n-k)\log{(1-p)}
     """
-    if k > n:
+    if np.any(k > n):
         raise ValueError("k must be less than or equal to n")
     if outofbounds(0 < p, p < 1):
         return -np.inf

@@ -13,7 +13,10 @@ Model for access to logp and grad functions.
 import collections
 
 from sampyl.core import auto_grad_logp, np
-from sampyl.state import func_var_names
+from sampyl.state import State, func_var_names
+
+
+__all__ = ['init_model', 'Model', 'SingleModel']
 
 
 class BaseModel(object):
@@ -51,15 +54,11 @@ class SingleModel(BaseModel):
     def __init__(self, logp_func):
         super(SingleModel, self).__init__()
         self.logp_func = logp_func
+        self.var_names = func_var_names(logp_func)
 
     def logp(self, state):
         """ Return log P(X) given a :ref:`state <state>` X"""
         frozen_state = state.freeze()
-        if not isinstance(frozen_state, collections.Hashable):
-            # uncacheable. a list, for instance.
-            # better to not cache than blow up.
-            logp_value, _ = self.logp_func(*state.values())
-            return logp_value
 
         if frozen_state in self._logp_cache:
             logp_value = self._logp_cache[frozen_state]
@@ -74,11 +73,6 @@ class SingleModel(BaseModel):
         """ Return grad log P(X) given a :ref:`state <state>` X """
         # Freeze the state as a tuple so we can use it as a dictionary key
         frozen_state = state.freeze()
-        if not isinstance(frozen_state, collections.Hashable):
-            # uncacheable. a list, for instance.
-            # better to not cache than blow up.
-            _, grad_value = self.logp_func(*state.values())
-            return grad_value
 
         if frozen_state in self._grad_cache:
             grad_value = self._grad_cache[frozen_state]
@@ -87,7 +81,7 @@ class SingleModel(BaseModel):
             self._logp_cache[frozen_state] = logp_value
             self._grad_cache[frozen_state] = grad_value
 
-        return grad_value
+        return grad_state(grad_value, state)
 
 
 class Model(BaseModel):
@@ -108,16 +102,12 @@ class Model(BaseModel):
         super(Model, self).__init__()
         self.logp_func = check_logp(logp_func)
         self.grad_func = check_grad_logp(logp_func, grad_func, grad_logp_flag)
+        self.var_names = func_var_names(logp_func)
 
     def logp(self, state):
         """ Return log P(X) given a :ref:`state <state>` X"""
         # Freeze the state as a tuple so we can use it as a dictionary key
         frozen_state = state.freeze()
-        if not isinstance(frozen_state, collections.Hashable):
-            # uncacheable. a list, for instance.
-            # better to not cache than blow up.
-            logp_value = self.logp_func(*state.values())
-            return logp_value
 
         if frozen_state in self._logp_cache:
             logp_value = self._logp_cache[frozen_state]
@@ -131,19 +121,13 @@ class Model(BaseModel):
         """ Return grad log P(X) given a :ref:`state <state>` X """
         # Freeze the state as a tuple so we can use it as a dictionary key
         frozen_state = state.freeze()
-        if not isinstance(frozen_state, collections.Hashable):
-            # uncacheable. a list, for instance.
-            # better to not cache than blow up.
-            grad_value = grad_vec(self.grad_func, state)
-            return grad_value
-
         if frozen_state in self._grad_cache:
             grad_value = self._grad_cache[frozen_state]
         else:
             grad_value = grad_vec(self.grad_func, state)
             self._grad_cache[frozen_state] = grad_value
 
-        return grad_value
+        return grad_state(grad_value, state)
 
 
 def init_model(logp, grad_logp=None, grad_logp_flag=False):
@@ -171,12 +155,24 @@ def grad_vec(grad_logp, state):
     """ grad_logp should be a function, or a dictionary of gradient functions, 
         respective to each parameter in logp
     """
+    
     if hasattr(grad_logp, '__call__'):
         # grad_logp is a single function
-        return np.array([grad_logp(*state.values())])
+        grad_val = grad_logp(*state.values())
+        return grad_val
     else:
         # got a dictionary instead
-        return np.array([grad_logp[each](*state.values()) for each in state])
+        grad_val = np.array([grad_logp[val](*state.values()) for val in state])
+        return grad_val
+
+
+def grad_state(grad_val, state):
+    g_state = State.fromkeys(state.keys())
+    if len(state) == 1:
+        g_state.update({var: grad_val for var in state})
+    else:
+        g_state.update({var: val for var, val in zip(state, grad_val)})
+    return g_state
 
 
 def check_logp(logp):

@@ -8,7 +8,7 @@ import pytest
 
 np_source = np.__package__
 
-n_samples = 100
+n_samples = 10
 
 def test_logp_with_grad():
     logp = poisson_with_grad

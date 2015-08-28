@@ -50,17 +50,20 @@ def poisson_with_grad(lam1, lam2):
     return poisson_logp(lam1, lam2), grad
 
 ###### Linear model ##########
+# b should be a length 5 array, sig a float
+N = 10
 true_b = np.random.randn(5)
-x = np.random.rand(5, 10)
-data = np.dot(true_b, x)
+
+X = np.ones((N, len(true_b)))
+X[:,1:] = np.random.rand(N, len(true_b)-1)*2
+
+y = np.dot(X, true_b) + np.random.randn(N)
+
 def linear_model_logp(b, sig):
     if smp.outofbounds(sig > 0):
         return -np.inf
-    mu = np.dot(b, x)
-    n = len(data)
-    likelihood = -n*0.5*np.log(2*np.pi) - \
-                  n*0.5*np.log(sig**2) - \
-                  np.sum((data - mu)**2)/(2*sig**2)
-    prior_sig = -np.log(np.abs(sig))
-    prior_b = smp.uniform(b, lower=-5, upper=10)
-    return likelihood + prior_sig + prior_b
+    y_hat = np.dot(X, b)
+    llh = smp.normal(y, mu=y_hat, sig=sig)
+    prior_sig = -np.log(sig)
+    prior_b = smp.normal(b, 0, 10)
+    return llh + prior_sig + prior_b
