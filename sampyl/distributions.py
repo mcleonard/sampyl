@@ -9,6 +9,7 @@ These should all automatically sum the log likelihoods if `x` is a numpy array.
 
 """
 
+import numbers
 from sampyl.core import np
 from scipy.special import gamma
 
@@ -92,7 +93,7 @@ def discrete_uniform(x, lower=0, upper=1):
             raise ValueError('x must be integers, function received {}'.format(x))
         else:
             return -np.size(x) * np.log(upper-lower)
-    elif isinstance(x, int) or isinstance(x, np.int_):
+    elif isinstance(x, numbers.Integral):
         return -np.log(upper-lower)
     else:
         return -np.inf
