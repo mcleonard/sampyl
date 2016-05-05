@@ -14,6 +14,10 @@ from sampyl.core import np
 from scipy.special import gamma
 
 
+__all__ = ['outofbounds', 'normal', 'uniform', 'discrete_uniform', 'exponential',
+           'poisson', 'binomial', 'bernoulli', 'beta', 'student_t', 'laplace',
+           'cauchy', 'weibull']
+
 def outofbounds(*conditions):
     """ Utility function for catching out of bound parameters. Returns True if 
         any of the conditions aren't met. Typically you'll use this at the
@@ -97,7 +101,6 @@ def discrete_uniform(x, lower=0, upper=1):
         return -np.log(upper-lower)
     else:
         return -np.inf
-
 
 
 def exponential(x, rate=1):
