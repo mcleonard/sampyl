@@ -15,7 +15,7 @@ def fit_hpd(data, alpha):
     return hpd
 
 def hpd(chain, alpha=0.95):
-    """ Return the Highest Probability Density (HPD) interval 
+    """ Return the Highest Posterior Density (HPD) interval 
 
         Note: This only works for uni-modal distributions!
     """
