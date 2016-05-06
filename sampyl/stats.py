@@ -41,8 +41,51 @@ def percentile(chain, alpha=0.95):
 def autocorr(chain):
     pass
 
+
+def calc_R_hat(split_chains):
+    """ Calculate R_hat from splitting chains """
+    psi_j = split_chains.mean(axis=1)
+    psi = psi_j.mean()
+    
+    B = n/(m-1)*np.sum((psi_j - psi)**2)
+    
+    sj2 = np.sum((split_chains - np.vstack(psi_j))**2, axis=1)/(n-1)
+    W = sj2.mean()
+    
+    var_hat = (n-1)*W/n + B/n
+    R_hat = np.sqrt(var_hat/W)
+    
+    return R_hat
+
+
 def R_hat(chain):
-    pass
+    n = int(len(chains[0])/2.)
+    m = int(len(chains)*2)
+    fields = chains[0].dtype.fields.keys()
+    R_hats = {}
+
+    for field in fields:
+        concat_chain = np.concatenate([each[field] for each in chains])
+        
+        # The code is a lot simpler if the chains are split evenly. 
+        # To split the chains evenly, we need to trim them down by the remainder
+        remainder = len(concat_chain) % m
+        if remainder != 0:
+            concat_chain = concat_chain[:-remainder]
+        
+        if chains[0].field(field).ndim == 1:
+            split_chains = np.array(np.split(concat_chain, m))
+            R_hat = calc_R_hat(split_chains)
+            R_hats[field] = R_hat
+        else:
+            R_hats[field] = []
+            for each in concat_chain.T:
+                split_chains = np.array(np.split(each, m))
+                R_hat = calc_R_hat(split_chains)
+                R_hats[field].append(R_hat)
+            R_hats[field] = np.array(R_hats[field])
+
+    return R_hats
 
 def effective_samples(chain):
     pass
