@@ -13,7 +13,8 @@ class Sampler(object):
                  scale=None,
                  condition=None,
                  grad_logp_flag=True,
-                 random_seed=None):
+                 random_seed=None,
+                 callback_func=None):
 
         self.model = init_model(logp, grad_logp, grad_logp_flag)
 
@@ -31,6 +32,7 @@ class Sampler(object):
         self.conditional = condition
         self._grad_logp_flag = grad_logp_flag
         self.seed = random_seed
+        self.callback_func = callback_func
 
         if random_seed:
             np.random.seed(random_seed)
@@ -78,8 +80,8 @@ class Sampler(object):
         pass
 
     def sample(self, num, burn=0, thin=1, n_chains=1, progress_bar=True):
-        
-        """ 
+
+        """
             Sample from :math:`P(X)`
 
             :param num: *int.* Number of samples to draw from :math:`P(X)`.
@@ -92,7 +94,7 @@ class Sampler(object):
                 process and the OS decides how to distribute the processes.
             :param progress_bar: (optional) *boolean.*
                 Show the progress bar, default = True.
-            :return: Record array with fields taken from arguments of 
+            :return: Record array with fields taken from arguments of
                 logp function.
 
         """
@@ -118,6 +120,9 @@ class Sampler(object):
         start_time = time.time() # For progress bar
         for i in range(num):
             samples[i] = next(self.sampler).tovector()
+
+            if self.callback_func:
+                self.callback_func(samples[i])
 
             if progress_bar and time.time() - start_time > 1:
                 update_progress(i+1, num)
