@@ -77,9 +77,9 @@ class Sampler(object):
             :ref:`state <state>` object is returned."""
         pass
 
-    def sample(self, num, burn=0, thin=1, n_chains=1, progress_bar=True):
-        
-        """ 
+    def sample(self, num, burn=0, thin=1, n_chains=1, progress_bar=True, callback=None):
+
+        """
             Sample from :math:`P(X)`
 
             :param num: *int.* Number of samples to draw from :math:`P(X)`.
@@ -92,9 +92,10 @@ class Sampler(object):
                 process and the OS decides how to distribute the processes.
             :param progress_bar: (optional) *boolean.*
                 Show the progress bar, default = True.
-            :return: Record array with fields taken from arguments of 
+            :param callback: (optional) *func.* of current sampler's :ref:`state <state>`.
+                Calls callback function at every sampler iteration, default = None.
+            :return: Record array with fields taken from arguments of
                 logp function.
-
         """
         if self.seed is not None:
             np.random.seed(self.seed)
@@ -118,6 +119,9 @@ class Sampler(object):
         start_time = time.time() # For progress bar
         for i in range(num):
             samples[i] = next(self.sampler).tovector()
+
+            if callback:
+                callback(next(self.sampler))
 
             if progress_bar and time.time() - start_time > 1:
                 update_progress(i+1, num)
