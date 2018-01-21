@@ -117,7 +117,7 @@ class Sampler(object):
 
         start_time = time.time() # For progress bar
         for i in range(num):
-            samples[i] = next(self.sampler).tovector()
+            samples[i] = tuple(next(self.sampler).values())
 
             if progress_bar and time.time() - start_time > 1:
                 update_progress(i+1, num)
