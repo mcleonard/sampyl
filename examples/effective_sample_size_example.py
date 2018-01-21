@@ -6,7 +6,7 @@ from sampyl.diagnostics import diagnostics
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-import seaborn as sns
+# import seaborn as sns
 
 # correlated gaussian
 def logp(x, y):

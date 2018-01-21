@@ -1,20 +1,20 @@
 import sys
 sys.path.append('.')
 import sampyl as smp
-from sampyl.state import State
+# from sampyl.state import State
 from sampyl import np
 from sampyl.diagnostics import diagnostics
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-import seaborn as sns
+# import seaborn as sns
 
 # correlated gaussian log likelihood
 def logp(x, y):
     icov = np.linalg.inv(np.array([[1., .8], [.8, 1.]]))
     d = np.array([x, y])
     return -.5 * np.dot(np.dot(d, icov), d)
-logp_xy = lambda(th): logp(th[0], th[1])
+logp_xy = lambda th: logp(th[0], th[1])
 
 # compare slice samplers, metropolis hastings, and the two variable 
 # slice sampler
@@ -31,12 +31,11 @@ btrace = bslice.sample(1000)
 slice_eff = diagnostics.compute_n_eff_acf(slice_trace.x)
 met_eff   = diagnostics.compute_n_eff_acf(met_trace.x)
 b_eff     = diagnostics.compute_n_eff_acf(btrace.th[:,0])
-print "Slice         effective sample size: %2.2f"%slice_eff
-print "MH            effective sample size: %2.2f"%met_eff
-print "two var slice effective sample size: %2.2f"%b_eff
-
-print " ----- "
-print "Slice sampler evals per sample: ", ssamp.evals_per_sample
+print( "Slice         effective sample size: %2.2f"%slice_eff)
+print("MH            effective sample size: %2.2f"%met_eff)
+print("two var slice effective sample size: %2.2f"%b_eff)
+print(" ----- ")
+print("Slice sampler evals per sample: ", ssamp.evals_per_sample)
 
 # graphically compare samples
 fig, axarr = plt.subplots(1, 3, figsize=(12,4))
