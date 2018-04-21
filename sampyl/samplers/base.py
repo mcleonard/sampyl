@@ -7,6 +7,7 @@ from ..progressbar import update_progress
 from ..state import State, func_var_names
 from ..model import init_model
 
+
 class Sampler(object):
     def __init__(self, logp, start,
                  grad_logp=None,
@@ -116,8 +117,10 @@ class Sampler(object):
             self.sampler = (self.step() for _ in count(start=0, step=1))
 
         start_time = time.time() # For progress bar
+        
+        # Start sampling, add each 
         for i in range(num):
-            samples[i] = next(self.sampler).tovector()
+            samples[i] = tuple(next(self.sampler).values())
 
             if progress_bar and time.time() - start_time > 1:
                 update_progress(i+1, num)
