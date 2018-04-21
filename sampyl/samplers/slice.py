@@ -144,7 +144,7 @@ class Slice(Sampler):
             new_llh   = dir_logprob(new_z)
             if np.isnan(new_llh):
                 print(new_z, direction*new_z + init_x, new_llh,
-                      llh_s, init_x, logprob(init_x))
+                      llh_s, init_x, dir_logprob(init_x))
                 raise Exception("Slice sampler got a NaN")
             if new_llh > llh_s and \
                     acceptable(new_z, llh_s, start_lower, start_upper):
