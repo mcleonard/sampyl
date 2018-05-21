@@ -5,7 +5,7 @@ sampyl.state
 Module for State object which stores sampler states in a dictionary.
 
 :copyright: (c) 2015 by Mat Leonard.
-:license: Apache2, see LICENSE for more details.
+:license: MIT, see LICENSE for more details.
 
 """
 

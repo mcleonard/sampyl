@@ -5,7 +5,7 @@ sampyl.samplers.slice
 This module implements the slice sampler.
 
 :copyright: (c) 2015 by Andrew Miller.
-:license: Apache2, see LICENSE for more details.
+:license: MIT, see LICENSE for more details.
 
 """
 

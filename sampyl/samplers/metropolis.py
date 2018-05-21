@@ -5,7 +5,7 @@ sampyl.samplers.metropolis
 Module implementing Metropolis-Hastings MCMC sampler.
 
 :copyright: (c) 2015 by Mat Leonard.
-:license: Apache2, see LICENSE for more details.
+:license: MIT, see LICENSE for more details.
 
 """
 

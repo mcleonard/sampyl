@@ -5,7 +5,7 @@ sampyl.parallel
 This module implements generating multiple Markov chains in parallel.
 
 :copyright: (c) 2015 by Mat Leonard.
-:license: Apache2, see LICENSE for more details.
+:license: MIT, see LICENSE for more details.
 
 """
 
