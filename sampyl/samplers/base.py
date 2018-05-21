@@ -1,5 +1,6 @@
 from itertools import count
 import time
+import unicodedata
 
 from ..core import np, auto_grad_logp, AUTOGRAD
 from ..parallel import parallel
@@ -23,6 +24,13 @@ class Sampler(object):
         self.var_names = func_var_names(logp)
 
         self.state = State.fromkeys(self.var_names)
+
+        # Making sure we normalize here because if some parameters use unicode 
+        # symbols, they are normalized through the func_var_names function. Then, we
+        # need to normalize them here as well or the keys in start won't match the
+        # keys from var_names
+        start = {unicodedata.normalize('NFKC', key): val for key, val in start.items()}
+
         self.state.update(start)
 
         self.scale = default_scale(scale, self.state)
