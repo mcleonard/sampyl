@@ -143,6 +143,12 @@ class Sampler(object):
         return samples[burn::thin]
 
 
+    def __call__(self, num, burn=0, thin=1, n_chains=1, progress_bar=True):
+
+        return self.sample(num, burn=burn, thin=thin, n_chains=n_chains, 
+                           progress_bar=progress_bar)
+
+
 def default_scale(scale, state):
     """ If scale is None, return a State object with arrays of ones matching
         the shape of values in state.
