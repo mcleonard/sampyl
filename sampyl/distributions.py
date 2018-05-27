@@ -14,7 +14,7 @@ from sampyl.core import np
 from scipy.special import gamma
 
 
-def outofbounds(*conditions):
+def fails_constraints(*conditions):
     """ Utility function for catching out of bound parameters. Returns True if 
         any of the conditions aren't met. Typically you'll use this at the
         beginning of defining the log P(X) functions. Example ::
@@ -52,7 +52,18 @@ def normal(x, mu=0, sig=1):
     if np.size(mu) != 1 and len(x) != len(mu):
         raise ValueError('If mu is a vector, x must be the same size as mu.'
                          ' We got x={}, mu={}'.format(x, mu))
+
+    if fails_constraints(sig >= 0):
+        return -np.inf
+
     return np.sum(-np.log(sig) - (x - mu)**2/(2*sig**2))
+
+
+def half_normal(x, mu=0, sig=1):
+    if fails_constraints(x >= 0):
+        return -np.inf
+
+    return normal(x, mu=mu, sig=sig)
 
 
 def uniform(x, lower=0, upper=1):
@@ -68,10 +79,11 @@ def uniform(x, lower=0, upper=1):
 
     """
 
-    if outofbounds(x >= lower, x <= upper):
+    if fails_constraints(x >= lower, x <= upper):
         return -np.inf
     
     return -np.size(x) * np.log(upper-lower)
+
 
 def discrete_uniform(x, lower=0, upper=1):
     """ Discrete Uniform distribution log-likelihood.
@@ -85,7 +97,7 @@ def discrete_uniform(x, lower=0, upper=1):
             \log{P(x; a, b)} = -n\log(b-a)
     """
 
-    if outofbounds(x >= lower, x <= upper):
+    if fails_constraints(x >= lower, x <= upper):
         return -np.inf
 
     if isinstance(x, np.ndarray):
@@ -111,7 +123,7 @@ def exponential(x, rate=1):
             \log{P(x; \lambda)} \propto \log{\lambda} - \lambda x
     """
 
-    if outofbounds(rate > 0):
+    if fails_constraints(x > 0, rate > 0):
         return -np.inf
 
     if np.size(rate) != 1 and len(x) != len(rate):
@@ -132,7 +144,7 @@ def poisson(x, rate=1):
 
     """
 
-    if outofbounds(rate > 0):
+    if fails_constraints(rate > 0):
         return -np.inf
     
     if np.size(rate) != 1 and len(x) != len(rate):
@@ -153,7 +165,7 @@ def binomial(k, n, p):
     """
     if k > n:
         raise ValueError("k must be less than or equal to n")
-    if outofbounds(0 < p, p < 1):
+    if fails_constraints(0 < p, p < 1):
         return -np.inf
     return np.sum(k*np.log(p) + (n-k)*np.log(1-p))
 
@@ -182,9 +194,10 @@ def beta(x, alpha=1, beta=1):
                                             (\\beta - 1) \log{(1 - x)}
     """
 
-    if outofbounds(0 < x, x < 1, alpha > 0, beta > 0):
+    if fails_constraints(0 < x, x < 1, alpha > 0, beta > 0):
         return -np.inf
     return np.sum((alpha - 1)*np.log(x) + (beta - 1)*np.log(1-x))
+
 
 def student_t(x, nu=1):
     """ Student's t log-likelihood
@@ -198,6 +211,10 @@ def student_t(x, nu=1):
                                      \\frac{1}{2}\log{\\nu} - \
                                      \\frac{\\nu+1}{2}\log{\left(1 + \\frac{x^2}{\\nu} \\right)}
     """
+    
+    if fails_constraints(nu >= 1):
+        return -np.inf
+
     return np.sum(np.log(gamma(0.5*(nu + 1))) - np.log(gamma(nu/2.)) - \
             0.5*np.log(nu) - (nu+1)/2*np.log(1+x**2/nu))
 
@@ -213,10 +230,11 @@ def laplace(x, mu, tau):
             \log{P(x; \\mu, \\tau)} \propto \log{\\tau/2} - \\tau \\left|x - \mu \\right|
 
     """
-    if outofbounds(tau > 0):
+    if fails_constraints(tau > 0):
         return -np.inf
     
     return np.sum(np.log(tau) - tau*np.abs(x - mu))
+
 
 def cauchy(x, alpha=0, beta=1):
     """ Cauchy distribution log-likelihood.
@@ -231,10 +249,30 @@ def cauchy(x, alpha=0, beta=1):
 
 
     """
-    if outofbounds(beta > 0):
+    if fails_constraints(beta > 0):
         return -np.inf
 
     return np.sum(-np.log(beta) - np.log(1 + ((x - alpha)/beta)**2))
+
+
+def half_cauchy(x, alpha=0, beta=1):
+    """ Half-Cauchy distribution log-likelihood (positive half).
+
+        :param x: *int, float, np.array.* :math:`-\infty < x < \infty`
+        :param alpha: *int, float, nparray.* Location parameter, :math:`-\infty < \\alpha < \infty`
+        :param beta: *int, float.* Scale parameter, :math:`\\beta > 0`
+
+        .. math::
+            \log{P(x; \\alpha, \\beta)} \propto -\log{\\beta} - \
+                                                \log{\left[1 + \left(\\frac{x - \\alpha}{\\beta}\\right)^2\\right]} 
+
+
+    """
+    if fails_constraints(x > 0):
+        return -np.inf
+
+    return cauchy(x, alpha=alpha, beta=beta)
+
 
 def weibull(x, l, k):
     """ Weibull distribution log-likelihood. 
@@ -245,7 +283,7 @@ def weibull(x, l, k):
 
     """
 
-    if outofbounds(l > 0, k > 0, x > 0):
+    if fails_constraints(l > 0, k > 0, x > 0):
         return -np.inf
 
     return np.sum(np.log(k/l) + (k-1)*np.log(x/l) - (x/l)**k)
