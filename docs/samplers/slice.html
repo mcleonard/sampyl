@@ -1,0 +1,204 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Slice Sampler &#8212; Sampyl 0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Hamiltonian MCMC Sampler" href="hamiltonian.html" />
+    <link rel="prev" title="Metropolis-Hastings Sampler" href="metropolis.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-sampyl">
+<span id="slice-sampler"></span><h1>Slice Sampler<a class="headerlink" href="#module-sampyl" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="sampyl.Slice">
+<em class="property">class </em><code class="descclassname">sampyl.</code><code class="descname">Slice</code><span class="sig-paren">(</span><em>logp</em>, <em>start</em>, <em>compwise=False</em>, <em>width=1.0</em>, <em>step_out=True</em>, <em>doubling_step=True</em>, <em>max_steps_out=10</em>, <em>verbose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sampyl.Slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Slice sampler (Neal, 2003) for creating a Markov chain that 
+leaves the the distribution defined by logp invariant</p>
+<dl class="docutils">
+<dt>For technical details, see Neal’s paper:</dt>
+<dd><a class="reference external" href="http://projecteuclid.org/euclid.aos/1056562461">http://projecteuclid.org/euclid.aos/1056562461</a></dd>
+</dl>
+<p>Andrew Miller (<a class="reference external" href="mailto:acm&#37;&#52;&#48;seas&#46;harvard&#46;edu">acm<span>&#64;</span>seas<span>&#46;</span>harvard<span>&#46;</span>edu</a>) 7-13-15</p>
+<p>Adapted from code written by Ryan Adams (<a class="reference external" href="mailto:rpa&#37;&#52;&#48;seas&#46;harvard&#46;edu">rpa<span>&#64;</span>seas<span>&#46;</span>harvard<span>&#46;</span>edu</a>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>logp</strong> – <em>function.</em> <span class="math notranslate nohighlight">\(\log{P(X)}\)</span> function for sampling
+distribution.</li>
+<li><strong>start</strong> – <em>scalar or 1D array-like.</em> Starting state for sampler.</li>
+<li><strong>compwise</strong> – (optional) <em>boolean.</em> Component-wise univariate 
+slice sample
+(or random direction)</li>
+<li><strong>width</strong> – (optional) <em>int, float.</em> (Initial) width of the slice</li>
+<li><strong>step_out</strong> – (optional) <em>boolean.</em> Perform step-out procedure</li>
+<li><strong>doubling_step</strong> – (optional) <em>boolean.</em> If stepping out, double
+slice width?</li>
+<li><strong>max_steps_out</strong> – (optional) <em>int.</em> Max number of steps out to perform</li>
+<li><strong>verbose</strong> – (optional) <em>boolean.</em> Print steps out</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="sampyl.Slice.direction_slice">
+<code class="descname">direction_slice</code><span class="sig-paren">(</span><em>direction</em>, <em>init_x</em><span class="sig-paren">)</span><a class="headerlink" href="#sampyl.Slice.direction_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>one dimensional directional slice sample along direction specified
+Implements the stepping out procedure from Neal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sampyl.Slice.sample">
+<code class="descname">sample</code><span class="sig-paren">(</span><em>num</em>, <em>burn=0</em>, <em>thin=1</em>, <em>n_chains=1</em>, <em>progress_bar=True</em><span class="sig-paren">)</span><a class="headerlink" href="#sampyl.Slice.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample from <span class="math notranslate nohighlight">\(P(X)\)</span></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num</strong> – <em>int.</em> Number of samples to draw from <span class="math notranslate nohighlight">\(P(X)\)</span>.</li>
+<li><strong>burn</strong> – (optional) <em>int.</em>
+Number of samples to discard from the beginning of the chain.</li>
+<li><strong>thin</strong> – (optional) <em>float.</em>
+Thin the samples by this factor.</li>
+<li><strong>n_chains</strong> – (optional) <em>int.</em>
+Number of chains to return. Each chain is given its own
+process and the OS decides how to distribute the processes.</li>
+<li><strong>progress_bar</strong> – (optional) <em>boolean.</em>
+Show the progress bar, default = True.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Record array with fields taken from arguments of 
+logp function.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sampyl.Slice.step">
+<code class="descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sampyl.Slice.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a slice sample step</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Sampyl</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=mcleonard&repo=sampyl&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../distributions.html">Distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model.html">Model</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../samplers.html">Samplers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="nuts.html">No-U-Turn Sampler (NUTS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metropolis.html">Metropolis-Hastings Sampler</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Slice Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hamiltonian.html">Hamiltonian MCMC Sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom.html">Custom Samplers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../state.html">State</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../samplers.html">Samplers</a><ul>
+      <li>Previous: <a href="metropolis.html" title="previous chapter">Metropolis-Hastings Sampler</a></li>
+      <li>Next: <a href="hamiltonian.html" title="next chapter">Hamiltonian MCMC Sampler</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Mat Leonard, Andrew Miller.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/samplers/slice.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
