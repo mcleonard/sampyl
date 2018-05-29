@@ -1,4 +1,6 @@
-__version__ = "0.2.2"
+
+name = "sampyl"
+__version__ = "0.3"
 
 from .samplers import *
 from .core import np

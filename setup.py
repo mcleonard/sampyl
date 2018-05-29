@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+import setuptools
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 
 classifiers = ['Development Status :: 1 - Pre-Alpha',
@@ -8,21 +11,20 @@ classifiers = ['Development Status :: 1 - Pre-Alpha',
                'Programming Language :: Python :: 2',
                'Programming Language :: Python :: 3',
                'Programming Language :: Python :: 2.7',
-               'Programming Language :: Python :: 3.4',
-               'License :: OSI Approved :: Apache Software License',
+               'Programming Language :: Python :: 3.6',
+               'License :: OSI Approved :: MIT License',
                'Intended Audience :: Science/Research',
                'Topic :: Scientific/Engineering',
                'Topic :: Scientific/Engineering :: Mathematics',
                'Operating System :: OS Independent']
 
 
-if __name__ == "__main__":
-    setup(name='sampyl',
-          version='0.2.2',
-          description='MCMC Samplers',
-          author='Mat Leonard',
-          author_email='leonard.mat@gmail.com',
-          url='https://github.com/mcleonard/sampyl.git',
-          packages=['sampyl', 'sampyl.samplers', 'sampyl.tests'],
-          classifiers=classifiers)
-
+setuptools.setup(name='sampyl',
+                 version='0.3',
+                 description='MCMC Samplers',
+                 author='Mat Leonard',
+                 author_email='leonard.mat@gmail.com',
+                 url='http://matatat.org/sampyl/',
+                 packages=['sampyl', 'sampyl.samplers'],
+                 classifiers=classifiers,
+                 install_requires=['numpy', 'scipy', 'autograd'])
