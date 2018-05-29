@@ -77,6 +77,7 @@ class Hamiltonian(Sampler):
 
 
 def leapfrog(x, r, step_size, grad):
+
     r1 = r + step_size/2*grad(x)
     x1 = x + step_size*r1
     r2 = r1 + step_size/2*grad(x1)
