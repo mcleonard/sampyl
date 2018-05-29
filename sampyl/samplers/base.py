@@ -6,7 +6,7 @@ from ..core import np, auto_grad_logp, AUTOGRAD
 from ..parallel import parallel
 from ..progressbar import update_progress
 from ..state import State, func_var_names
-from ..model import init_model
+from ..posterior import init_posterior
 
 
 class Sampler(object):
@@ -17,7 +17,7 @@ class Sampler(object):
                  grad_logp_flag=True,
                  random_seed=None):
 
-        self.model = init_model(logp, grad_logp, grad_logp_flag)
+        self.model = init_posterior(logp, grad_logp, grad_logp_flag)
 
         self._logp_func = logp
         self._grad_func = grad_logp
