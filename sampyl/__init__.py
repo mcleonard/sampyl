@@ -1,5 +1,5 @@
 
-name = "sampyl"
+name = "sampyl-mcmc"
 __version__ = "0.3"
 
 from .samplers import *

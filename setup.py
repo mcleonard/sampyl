@@ -6,8 +6,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 
-classifiers = ['Development Status :: 1 - Pre-Alpha',
-               'Programming Language :: Python',
+classifiers = ['Programming Language :: Python',
                'Programming Language :: Python :: 2',
                'Programming Language :: Python :: 3',
                'Programming Language :: Python :: 2.7',
@@ -19,9 +18,9 @@ classifiers = ['Development Status :: 1 - Pre-Alpha',
                'Operating System :: OS Independent']
 
 
-setuptools.setup(name='sampyl',
+setuptools.setup(name='sampyl-mcmc',
                  version='0.3',
-                 description='MCMC Samplers',
+                 description='MCMC Samplers in Python & Numpy',
                  author='Mat Leonard',
                  author_email='leonard.mat@gmail.com',
                  url='http://matatat.org/sampyl/',
