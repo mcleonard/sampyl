@@ -23,9 +23,10 @@ Currently, [numpy](http://www.numpy.org/) and [scipy](http://www.scipy.org/) are
 
 
 ### Installation
-Since this is a very alpha stage package, I'm not willing to put it up on PyPI yet. For now you can install it with pip like so:
 
-`pip install git+https://github.com/mcleonard/sampyl`
+Unfortunately, there was a name collision, so use this to install from PyPI:
+
+`pip install sampyl-mcmc`
 
 
 ### Documentation
