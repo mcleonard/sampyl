@@ -69,7 +69,7 @@ class Slice(Sampler):
         """ Perform a slice sample step """
         dims = self.state.tovector().shape[0]
         if self.compwise:
-            ordering = range(dims)
+            ordering = np.arange(dims)
             np.random.shuffle(ordering)
             new_x = self.state.tovector.copy()
             for d in ordering:
