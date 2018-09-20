@@ -1,6 +1,7 @@
 """ Core file used for things a bunch of other files need. """
 
 from .exceptions import AutogradError
+import warnings
 
 # Basically, all other files will import numpy from here. I did this way
 # so that if autograd is installed, the other files will use its numpy.
@@ -13,6 +14,9 @@ except ImportError:
     AUTOGRAD = False
     import numpy as np
 
+
+if AUTOGRAD:
+    warnings.filterwarnings('ignore', message='Output seems independent of input. Returning zero gradient.')
 
 def auto_grad_logp(logp, names=None):
     """ Automatically builds gradient logps using autograd. Returns as list

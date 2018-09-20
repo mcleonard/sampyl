@@ -3,13 +3,13 @@
 from __future__ import division as _division
 
 from .core import np
-import scipy._optimize as _opt
+import scipy.optimize as _opt
 
 __all__ = ['hpd', 'percentile', 'mean', 'median', 'summary', 'calc_R_hat', 'calc_n_eff']
 
 
 def _fit_hpd(data, alpha):
-    cost = lambda q: np.diff(np.percentile(data, q=(q[0] + 0, q[0] + alpha), axis=0).T)
+    cost = lambda q: np.diff(np.percentile(data, q=(q[0] + 0, q[0] + alpha), axis=0).T).sum()
     res = _opt.minimize(cost, (100 - alpha)/2., bounds=[(0.00001, 99.9999-alpha)])
     q_hpd = res.x[0]
     hpd = np.percentile(data, q=(q_hpd, q_hpd + alpha), axis=0).T
@@ -47,7 +47,7 @@ def percentile(chain, alpha=0.95):
 
 
 def _calc_var_hat(split_chains):
-    """ Calculate var_hat from splitting chains"""
+    """ Calculate var_hat from split chains"""
     m, n = split_chains.shape
     chain_means = split_chains.mean(axis=1)
     grand_mean = chain_means.mean()
@@ -62,8 +62,8 @@ def _calc_var_hat(split_chains):
     return W, var_hat
 
 
-def calc_R_hat(split_chains):
-    """ Calculate R_hat from splitting chains """
+def _calc_R_hat(split_chains):
+    """ Calculate R_hat from split chains """
     
     W, var_hat = _calc_var_hat(split_chains)
     R_hat = np.sqrt(var_hat/W)
@@ -123,8 +123,8 @@ def calc_n_eff(split_chains):
     rho_sum = 0
     rhos = []
     while t < n:
-        rhos.append(rho_hat(split_chains, t))
-        rho_sum = rho_hat(split_chains, t+1) + rho_hat(split_chains, t+2)
+        rhos.append(_rho_hat(split_chains, t))
+        rho_sum = _rho_hat(split_chains, t+1) + _rho_hat(split_chains, t+2)
         t += 1
         if rho_sum < 0 and t%2 == 1:
             break
