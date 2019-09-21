@@ -71,7 +71,7 @@ class Slice(Sampler):
         if self.compwise:
             ordering = np.arange(dims)
             np.random.shuffle(ordering)
-            new_x = self.state.tovector.copy()
+            new_x = self.state.tovector().copy()
             for d in ordering:
                 direction    = np.zeros((dims))
                 direction[d] = 1.0
