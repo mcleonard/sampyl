@@ -29,7 +29,7 @@ class Sampler(object):
         # symbols, they are normalized through the func_var_names function. Then, we
         # need to normalize them here as well or the keys in start won't match the
         # keys from var_names
-        start = {unicodedata.normalize('NFKC', key): val for key, val in start.items()}
+        start = {unicodedata.normalize('NFKC', key.decode('utf-8')): val for key, val in start.items()}
 
         self.state.update(start)
 
