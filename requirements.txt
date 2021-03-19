@@ -5,7 +5,7 @@ Babel==2.0
 certifi==14.5.14
 docutils==0.12
 ipython==3.2.1
-Jinja2==2.7.3
+Jinja2==2.11.3
 jsonschema==2.4.0
 livereload==2.4.0
 MarkupSafe==0.23
