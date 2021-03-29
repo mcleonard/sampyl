@@ -18,7 +18,7 @@ pathtools==0.1.2
 pbr==1.4.0
 ptyprocess==0.4
 py==1.4.30
-Pygments==2.0.2
+Pygments==2.7.4
 pyparsing==2.0.3
 pytest==2.7.2
 python-dateutil==2.4.2
