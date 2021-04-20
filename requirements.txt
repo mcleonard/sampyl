@@ -17,7 +17,7 @@ pandas==0.16.2
 pathtools==0.1.2
 pbr==1.4.0
 ptyprocess==0.4
-py==1.4.30
+py==1.10.0
 Pygments==2.0.2
 pyparsing==2.0.3
 pytest==2.7.2
